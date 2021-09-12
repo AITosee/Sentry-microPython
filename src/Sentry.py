@@ -42,8 +42,8 @@ SENTRY_PROTOC_GET_RESULT = 0x23
 SENTRY_PROTOC_MESSAGE = 0x11
 
 # sentrys_vision
-VisionColorRecog = 1
-VisionColorDetect = 2
+VisionColor = 1
+VisionBlob = 2
 VisionAprilTag = 3
 VisionLine = 4
 VisionBody = 5
@@ -172,7 +172,7 @@ WhiteLight = 2
 YellowLight = 3
 WhiteBalanceCalibrating = 4
 
-
+LOG_OFF = 60
 LOG_CRITICAL = 50
 LOG_ERROR = 40
 LOG_WARNING = 30
@@ -180,10 +180,10 @@ LOG_INFO = 20
 LOG_DEBUG = 10
 LOG_NOTSET = 0
 
-
-class MuvisionLogger:
-
-    _level = LOG_INFO
+global __level__
+class SentryLogger:
+    global __level__
+    __level__ = LOG_INFO
     _level_dict = {
         LOG_CRITICAL: "CRIT",
         LOG_ERROR: "ERROR",
@@ -199,10 +199,12 @@ class MuvisionLogger:
         return "LVL%s" % level
 
     def setLevel(self, level):
-        self._level = level
+        global __level__
+        __level__ = level
 
     def isEnabledFor(self, level):
-        return level >= self._level
+        global __level__
+        return level >= __level__
 
     def log(self, name, level, msg, *args):
         if self.isEnabledFor(level):
@@ -224,7 +226,7 @@ class MuvisionLogger:
             print(*msgformat, sep=" ")
 
 
-class vision_result:
+class result:
     result_data1 = 0
     result_data2 = 0
     result_data3 = 0
@@ -238,10 +240,10 @@ class VisionState:
         self.vision_type = vision_type
         self.frame = 0
         self.detect = 0
-        self.vision_result = []
+        self.result = []
 
         for _ in range(SENTRY_MAX_RESULT):
-            self.vision_result.append(vision_result())
+            self.result.append(result())
 
 
 class SentryI2CMethod:
@@ -298,8 +300,7 @@ class SentryI2CMethod:
 
         return (err, result_data_tmp2 << 8 | result_data_tmp1)
 
-    def Read(self, vision_type):
-        vision_state = VisionState(vision_type)
+    def Read(self, vision_type, vision_state):
         err = self.Set(RegVisionId, vision_type)
         if err:
             return (err, vision_state)
@@ -325,23 +326,23 @@ class SentryI2CMethod:
             if err:
                 return (err, vision_state)
 
-            err, vision_state.vision_result[i].result_data1 = self.__get_result_data(
+            err, vision_state.result[i].data1 = self.__get_result_data(
                 RegResultData1L, RegResultData1H)
             if err:
                 return (err, vision_state)
-            err, vision_state.vision_result[i].result_data2 = self.__get_result_data(
+            err, vision_state.result[i].data2 = self.__get_result_data(
                 RegResultData2L, RegResultData2H)
             if err:
                 return (err, vision_state)
-            err, vision_state.vision_result[i].result_data3 = self.__get_result_data(
+            err, vision_state.result[i].data3 = self.__get_result_data(
                 RegResultData3L, RegResultData3H)
             if err:
                 return (err, vision_state)
-            err, vision_state.vision_result[i].result_data4 = self.__get_result_data(
+            err, vision_state.result[i].data4 = self.__get_result_data(
                 RegResultData4L, RegResultData4H)
             if err:
                 return (err, vision_state)
-            err, vision_state.vision_result[i].result_data5 = self.__get_result_data(
+            err, vision_state.result[i].data5 = self.__get_result_data(
                 RegResultData5L, RegResultData5H)
             if err:
                 return (err, vision_state)
@@ -370,24 +371,27 @@ class SentryI2CMethod:
 
         return SENTRY_OK
 
-    def ReadQrCode(self):
-        vision_state = self.Read(VisionQrCode)
-        vision_state.vision_result[0].bytestr = ""
+    def ReadQrCode(self, vision_state):
+        err, vision_state = self.Read(VisionQrCode, vision_state)
+        if err:
+            return err, None
 
-        for i in range(vision_state.vision_result[0].result_data5):
-            result_id = i / 5 + 2
+        vision_state.result[0].bytestr = ""
+
+        for i in range(vision_state.result[0].data5):
+            result_id = int(i / 5 + 2)
             offset = i % 5
             if 0 == i % 5:
-                err = self.Set(RegVisionId, result_id)
+                err = self.Set(RegResultId, result_id)
                 if err:
-                    return err
+                    return err, None
 
-            err, bytestr= chr(self.Get(RegResultData1L + 2 * offset))
+            err, bytec = self.Get(RegResultData1L + 2 * offset)
             if err:
-                return err
-            vision_state.vision_result[0].bytestr +=bytestr
-            
-        return SENTRY_OK
+                return err, vision_state
+            vision_state.result[0].bytestr += chr(bytec)
+
+        return SENTRY_OK, vision_state
 
 
 class SentryUartMethod:
@@ -395,12 +399,12 @@ class SentryUartMethod:
 
     """
 
-    def __init__(self, address, communication_port, logger=None):
+    def __init__(self, address, communication_port,baud, logger=None):
         self.__mu_address = address
         self.__communication_port = communication_port
         self.__logger = logger
         # Setting serial port parameters
-        self.__communication_port.init(timeout=1000, timeout_char=10)
+        self.SetBuadrate(baud)
 
     def Logger(self, *arg):  # level, format, args
         if self.__logger:
@@ -427,6 +431,7 @@ class SentryUartMethod:
             if count_ms < 1000:
                 sleep_ms(1)
             else:
+                self.Logger(LOG_ERROR, "Waiting for reception timeOut!!!")
                 return (SENTRY_PROTOC_TIMEOUT, [])
 
         self.Logger(LOG_DEBUG, "Waiting for reception takes %dms", count_ms)
@@ -442,7 +447,7 @@ class SentryUartMethod:
                 break
 
         if self.__logger:
-            self.Logger(LOG_DEBUG, "Set rev-> %s",
+            self.Logger(LOG_DEBUG, "    rev-> %s",
                         ' '.join(['%02x' % b for b in data_list]))
 
         if data_len > 0 and data_len != len(data_list):
@@ -462,8 +467,8 @@ class SentryUartMethod:
         baud_se = (9600, 19200, 38400, 57600, 115200, 921600, 1152000, 2000000)
         if baud in baud_em:
             i = baud_em.index(baud)
-            self.Logger(LOG_INFO, "SetBuadrate:%d", baud_se[i])
-            self.__communication_port.init(baudrate=baud_se[i])
+            self.Logger(LOG_CRITICAL, "SetBuadrate:%d", baud_se[i])
+            self.__communication_port.init(baudrate=baud_se[i], timeout=1000, timeout_char=10)
 
     def Set(self, reg_address, value):
 
@@ -499,9 +504,12 @@ class SentryUartMethod:
                 else:
                     return data[0]
 
-            try_time += 1
-            if try_time > 3:
-                return SENTRY_READ_TIMEOUT
+            elif err == SENTRY_PROTOC_TIMEOUT:
+                try_time += 1
+                if try_time > 3:
+                    return SENTRY_READ_TIMEOUT
+            else:
+                return SENTRY_FAIL
 
     def Get(self, reg_address):
 
@@ -535,12 +543,15 @@ class SentryUartMethod:
                     return (SENTRY_OK, data[2])
                 else:
                     return (data[0], 0)
-            try_time += 1
-            if try_time > 3:
-                return (SENTRY_READ_TIMEOUT, 0)
 
-    def Read(self, vision_type):
-        vision_state = VisionState(vision_type)
+            elif err == SENTRY_PROTOC_TIMEOUT:
+                try_time += 1
+                if try_time > 3:
+                    return SENTRY_READ_TIMEOUT
+            else:
+                return SENTRY_FAIL
+
+    def Read(self, vision_type, vision_state):
 
         data_list = [SENTRY_PROTOC_START, 0, self.__mu_address,
                      SENTRY_PROTOC_GET_RESULT, vision_type, 0, 0]
@@ -564,56 +575,54 @@ class SentryUartMethod:
         self.__communication_port.write(data)
 
         try_time = 0
+        vision_state.detect = 0
 
         while True:
             err, data = self.__protocol_read()
-
-            if self.__logger:
-                self.Logger(LOG_DEBUG, "Read rev-> %s",
-                            ' '.join(['%02x' % b for b in data]))
-
+            #print("read",hex(err), hex(data[0]))
             if err == SENTRY_PROTOC_OK:
-                if data[0] == SENTRY_PROTOC_OK or \
-                        data[0] == SENTRY_PROTOC_RESULT_NOT_END or \
-                        data[3] == vision_type:
-                    if data[1] == SENTRY_PROTOC_GET_RESULT:
+                if data[0] == SENTRY_PROTOC_OK or data[0] == SENTRY_PROTOC_RESULT_NOT_END:
+                    if data[1] == SENTRY_PROTOC_GET_RESULT and data[3] == vision_type:
                         vision_state.frame = data[2]
-                        vision_state.detect = 0
                         start_id = data[4]
                         stop_id = data[5]
 
-                        if SENTRY_MAX_RESULT > stop_id:
-                            return (SENTRY_UNSUPPORT_PARAM, None)
+                        if SENTRY_MAX_RESULT < stop_id:
+                            return (SENTRY_UNSUPPORT_PARAM, vision_state)
 
-                        for i in range(start_id-1, stop_id):
-                            j = vision_state.detect
-                            vision_state.vision_result[i].result_data1 =\
-                                data[10 * j + 6] << 8 | data[10 * j + 7]
-                            vision_state.vision_result[i].result_data2 =\
-                                data[10 * j + 8] << 8 | data[10 * j + 9]
-                            vision_state.vision_result[i].result_data3 =\
-                                data[10 * j + 10] << 8 | data[10 * j + 11]
-                            vision_state.vision_result[i].result_data4 =\
-                                data[10 * j + 12] << 8 | data[10 * j + 13]
-                            vision_state.vision_result[i].result_data5 =\
-                                data[10 * j + 14] << 8 | data[10 * j + 15]
+                        if not start_id:
+                            return (SENTRY_OK, vision_state)
 
-                            vision_state.detect += 1
+                        vision_state.detect = stop_id-start_id+1
+                        for i in range(vision_state.detect):
+                            v_id = i+start_id-1
+                            vision_state.result[v_id].data1 = data[10 *
+                                                                   i + 6] << 8 | data[10 * i + 7]
+                            vision_state.result[v_id].data2 = data[10 *
+                                                                   i + 8] << 8 | data[10 * i + 9]
+                            vision_state.result[v_id].data3 = data[10 *
+                                                                   i + 10] << 8 | data[10 * i + 11]
+                            vision_state.result[v_id].data4 = data[10 *
+                                                                   i + 12] << 8 | data[10 * i + 13]
+                            vision_state.result[v_id].data5 = data[10 *
+                                                                   i + 14] << 8 | data[10 * i + 15]
 
                         if data[0] == SENTRY_PROTOC_RESULT_NOT_END:
                             continue
                         else:
                             return (SENTRY_OK, vision_state)
                     else:
-                        return (SENTRY_UNSUPPORT_PARAM, None)
-
-            try_time += 1
-            if try_time > 3:
-                return (SENTRY_READ_TIMEOUT, None)
+                        return (SENTRY_UNSUPPORT_PARAM, vision_state)
+            elif err == SENTRY_PROTOC_TIMEOUT:
+                try_time += 1
+                if try_time > 3:
+                    return (SENTRY_READ_TIMEOUT, vision_state)
+            else:
+                 return (SENTRY_FAIL, vision_state)
 
     def SetParam(self, vision_id, param: list, param_id):
         data_list = [SENTRY_PROTOC_START, 0, self.__mu_address,
-                     SENTRY_PROTOC_COMMADN_SET, vision_id, param_id+1, param_id+1]
+                     SENTRY_PROTOC_SET_PARAM, vision_id, param_id+1, param_id+1]
 
         data_list += param
         data_list[1] = len(data_list)+2
@@ -640,10 +649,6 @@ class SentryUartMethod:
         while True:
             err, data = self.__protocol_read()
 
-            if self.__logger:
-                self.Logger(LOG_DEBUG, "Set rev-> %s",
-                            ' '.join(['%02x' % b for b in data]))
-
             if err == SENTRY_PROTOC_OK:
                 if data[0] == SENTRY_PROTOC_OK:
                     if data[1] == SENTRY_PROTOC_SET_PARAM:
@@ -654,13 +659,16 @@ class SentryUartMethod:
                     #    return SENTRY_FAIL
                     else:
                         return SENTRY_UNSUPPORT_PARAM
-
-            try_time += 1
-            if try_time > 3:
-                return SENTRY_READ_TIMEOUT
-
-    def ReadQrCode(self):
-        qrcode = VisionState(VisionQrCode)
+                else:
+                    return SENTRY_READ_TIMEOUT
+            elif err == SENTRY_PROTOC_TIMEOUT:
+                try_time += 1
+                if try_time > 3:
+                    return SENTRY_READ_TIMEOUT
+            else:
+                 return SENTRY_FAIL
+                 
+    def ReadQrCode(self, qrcode):
 
         data_list = [SENTRY_PROTOC_START, 0, self.__mu_address,
                      SENTRY_PROTOC_GET_RESULT, VisionQrCode, 0, 0]
@@ -689,43 +697,39 @@ class SentryUartMethod:
         while True:
             err, data = self.__protocol_read()
 
-            if self.__logger:
-                self.Logger(LOG_DEBUG, "Read rev-> %s",
-                            ' '.join(['%02x' % b for b in data]))
-
             if err == SENTRY_PROTOC_OK:
                 if data[0] == SENTRY_PROTOC_OK or data[3] == VisionQrCode:
                     if data[1] == SENTRY_PROTOC_GET_RESULT:
                         qrcode.frame = data[2]
                         qrcode.detect = 0
                         if data[5] == 0:
-                            return SENTRY_OK
-                        qrcode.detect = (data[5] - data[4] + 1) > 0
+                            return (SENTRY_OK, qrcode)
+
+                        qrcode.detect = int((data[5] - data[4] + 1) > 0)
                         if not qrcode.detect:
-                            return SENTRY_OK
+                            return (SENTRY_OK, qrcode)
 
-                        qrcode.vision_result[0].result_data1 =\
-                            data[10 + 6] << 8 | data[10 + 7]
-                        qrcode.vision_result[0].result_data2 =\
-                            data[10 + 8] << 8 | data[10 + 9]
-                        qrcode.vision_result[0].result_data3 =\
-                            data[10 + 10] << 8 | data[10 + 11]
-                        qrcode.vision_result[0].result_data4 =\
-                            data[10 + 12] << 8 | data[10 + 13]
-                        qrcode.vision_result[0].result_data5 =\
-                            data[10 + 14] << 8 | data[10 + 15]
+                        qrcode.result[0].data1 = data[6] << 8 | data[7]
+                        qrcode.result[0].data2 = data[8] << 8 | data[9]
+                        qrcode.result[0].data3 = data[10] << 8 | data[11]
+                        qrcode.result[0].data4 = data[12] << 8 | data[13]
+                        qrcode.result[0].data5 = data[14] << 8 | data[15]
 
-                        for i in range(qrcode.vision_result[0].result_data5):
-                            qrcode.vision_result[0].bytestr += chr(
+                        qrcode.result[0].bytestr = ""
+                        for i in range(qrcode.result[0].data5):
+                            qrcode.result[0].bytestr += chr(
                                 data[17 + 2 * i])
 
                         return (SENTRY_OK, qrcode)
                     else:
-                        return (SENTRY_UNSUPPORT_PARAM, None)
+                        return (SENTRY_UNSUPPORT_PARAM, qrcode)
 
-            try_time += 1
-            if try_time > 3:
-                return (SENTRY_READ_TIMEOUT, None)
+            elif err == SENTRY_PROTOC_TIMEOUT:
+                try_time += 1
+                if try_time > 3:
+                    return (SENTRY_READ_TIMEOUT, qrcode)
+            else:
+                 return (SENTRY_FAIL, qrcode)
 
 
 class Sentry:
@@ -733,32 +737,28 @@ class Sentry:
 
     """
 
-    def __init__(self, address=0x60, debug=False):
+    def __init__(self, address=0x60, log_level=LOG_ERROR):
         self.__address = address
         self.__stream = None
         self.__img_w = 0
         self.__img_h = 0
+        self.__debug = None
         self.__vision_states = [None]*SENTRY_MAX_RESULT
 
-        self.SetDebug(debug)
-
-    @staticmethod
-    def __setLevel(*arg):
-        pass
+        self.SetDebug(log_level)
 
     def Logger(self, *arg):  # level, format, args
         if self.__logger:
             self.__logger(self.__class__.__name__, *arg)
 
-    def SetDebug(self, debug=False, level=LOG_INFO):
-        if debug:
-            self.__debug = MuvisionLogger()
+    def SetDebug(self, log_level=LOG_OFF):
+        if log_level < LOG_OFF:
+            self.__debug = SentryLogger()
             self.__logger = self.__debug.log
-            self.SetLogLevel = self.__debug.setLevel
-            self.SetLogLevel(level)
+            self.__debug.setLevel(log_level)
         else:
-            self.__logger = None
-            self.SetLogLevel = self.__setLevel
+            if self.__debug:
+                self.__debug.setLevel(LOG_OFF)
 
     def __SensorLockReg(self, lock: bool):
         return self.__stream.Set(RegLock, lock)
@@ -768,7 +768,11 @@ class Sentry:
         while True:
             err_count += 1
             err, start_up = self.__stream.Get(RegSensorConfig1)
-            if (not err) and start_up & 0x01:
+            if err:
+                self.Logger(LOG_ERROR, "SensorStartupCheck error:%d!"%err)
+                return err
+
+            if  start_up & 0x01:
                 break
 
             sleep_ms(10)
@@ -833,7 +837,9 @@ class Sentry:
         if err:
             return err
 
-    def begin(self, communication_port=None):
+        return SENTRY_OK
+
+    def begin(self, communication_port=None,baud=Baud9600):
         if "I2C" == communication_port.__class__.__name__:
             self.__stream = SentryI2CMethod(
                 self.__address, communication_port, logger=self.__logger)
@@ -841,7 +847,7 @@ class Sentry:
 
         elif 'UART' == communication_port.__class__.__name__:
             self.__stream = SentryUartMethod(
-                self.__address, communication_port, logger=self.__logger)
+                self.__address, communication_port,baud, logger=self.__logger)
             self.Logger(LOG_INFO, "Begin UART mode succeed!")
 
         elif communication_port == None:
@@ -868,18 +874,17 @@ class Sentry:
     def VisionEnd(self, vision_type):
         return self.VisionSetStatus(vision_type, False)
 
-    def GetValue(self, vision_type, object_inf):
+    def GetValue(self, vision_type, object_inf, obj_id=0):
         '''
          Note: when getting the vision status, if the block is true, it will wait until the vision_type result is updated   
         '''
         if object_inf == Status:
-            while True:
-                if (self.UpdateResult(vision_type, True) & vision_type) != 0:
-                    break
-                else:
-                    sleep_ms(10)  # pylint: disable=undefined-variable
+            err = True
+            while err:
+                err = self.UpdateResult(vision_type)
+                sleep_ms(10)  # pylint: disable=undefined-variable
 
-            return self.__read(vision_type, object_inf)
+        return self.__read(vision_type, object_inf, obj_id)
 
     def SetParamNum(self, vision_type, max_num):
         err = self.__stream.Set(RegVisionId, vision_type)
@@ -890,10 +895,16 @@ class Sentry:
 
         return err
 
-    def SetParam(self, vision_type, param, param_id):
+    def SetParam(self, vision_type, param: list, param_id):
         if param_id < 0 or param_id >= SENTRY_MAX_RESULT:
             return SENTRY_FAIL
-        return self.__stream.SetParam(vision_type, param, param_id)
+
+        params = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        for i in range(min(len(param), 5)):
+            params[i] = param[i] >> 8
+            params[i+1] = param[i] & 0xff
+
+        return self.__stream.SetParam(vision_type, params, param_id)
 
     def GetVisionState(self, vision_type):
         if vision_type >= VisionMaxType:
@@ -976,28 +987,30 @@ class Sentry:
         if vision_type >= VisionMaxType:
             return 0
 
+        vision_state = self.__vision_states[vision_type-1]
+
         err, frame = self.__stream.Get(RegFrameCount)
         if err:
-            return 0
+            return err
 
-        if frame == self.__vision_states[vision_type-1].frame:
-            return 0
+        if frame == vision_state.frame:
+            return SENTRY_FAIL
 
         while SENTRY_OK != self.__SensorLockReg(True):
             pass
 
         if vision_type == VisionQrCode:
-            err, vision_state = self.__stream.ReadQrCode(vision_type)
+            err, vision_state = self.__stream.ReadQrCode(vision_state)
         else:
-            err, vision_state = self.__stream.Read(vision_type)
+            err, vision_state = self.__stream.Read(vision_type, vision_state)
 
         while SENTRY_OK != self.__SensorLockReg(False):
             pass
 
+        self.__vision_states[vision_type-1] = vision_state
+
         if err:
             return err
-
-        self.__vision_states[vision_type-1] = vision_state
 
         return SENTRY_OK
 
@@ -1015,21 +1028,21 @@ class Sentry:
         if object_inf == Status:
             return vision_state.detect
         elif object_inf == XValue:
-            return vision_state.vision_result[obj_id].result_data1*100/self.__img_w
+            return int(vision_state.result[obj_id].data1*100/self.__img_w)
         elif object_inf == YValue:
-            return vision_state.vision_result[obj_id].result_data2*100/self.__img_h
+            return int(vision_state.result[obj_id].data2*100/self.__img_h)
         elif object_inf == WidthValue:
-            return vision_state.vision_result[obj_id].result_data3*100/self.__img_w
+            return int(vision_state.result[obj_id].data3*100/self.__img_w)
         elif object_inf == HeightValue:
-            return vision_state.vision_result[obj_id].result_data4*100/self.__img_w
+            return int(vision_state.result[obj_id].data4*100/self.__img_h)
         elif object_inf == Label:
-            return vision_state.vision_result[obj_id].result_data5
+            return vision_state.result[obj_id].data5
         elif object_inf == GValue:
-            return vision_state.vision_result[obj_id].result_data1
+            return vision_state.result[obj_id].data1
         elif object_inf == RValue:
-            return vision_state.vision_result[obj_id].result_data2
+            return vision_state.result[obj_id].data2
         elif object_inf == BValue:
-            return vision_state.vision_result[obj_id].result_data3
+            return vision_state.result[obj_id].data3
         else:
             return 0
 
@@ -1038,7 +1051,7 @@ class Sentry:
         if vision_state == None:
             return ""
 
-        return vision_state.vision_result[0].bytestr
+        return vision_state.result[0].bytestr
 
     def SensorSetRestart(self):
         err = self.__stream.Set(RegRestart, 1)
@@ -1062,7 +1075,7 @@ class Sentry:
             if err:
                 return err
 
-            if not (sensor_config_reg_value&0x08):
+            if not (sensor_config_reg_value & 0x08):
                 self.Logger(LOG_INFO, "SensorSetDefault succeed!")
                 break
 
