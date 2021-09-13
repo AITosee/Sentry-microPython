@@ -42,18 +42,18 @@ SENTRY_PROTOC_GET_RESULT = 0x23
 SENTRY_PROTOC_MESSAGE = 0x11
 
 # sentrys_vision
-VisionColor = 1
-VisionBlob = 2
-VisionAprilTag = 3
-VisionLine = 4
-VisionBody = 5
-VisionCard = 6
-VisionFace = 7
-Vision20Classes = 8
-VisionQrCode = 9
-VisionObjTrack = 10
-VisionMotionDetect = 11
-VisionMaxType = 12
+kVisionColor = 1
+kVisionBlob = 2
+kVisionAprilTag = 3
+kVisionLine = 4
+kVisionBody = 5
+kVisionCard = 6
+kVisionFace = 7
+kVision20Classes = 8
+kVisionQrCode = 9
+kVisionObjTrack = 10
+kVisionMotionDetect = 11
+kVisionMaxType = 12
 
 # sentry_led_color
 LedClose = 0
@@ -66,111 +66,111 @@ LedCyan = 6
 LedWhite = 7
 
 # sentry_reg
-RegDeviceId = 0x01
-RegFirmwareVersion = 0x02
-RegRestart = 0x03
-RegSensorConfig1 = 0x04
-RegLock = 0x05
-RegLed1 = 0x06
-RegLed2 = 0x07
-RegLedLevel = 0x08
-RegUart = 0x09
-RegUSBCongig = 0x0B
-RegHWConfig = 0x0F
-RegCameraConfig1 = 0x10
-RegCameraConfig2 = 0x11
-RegCameraConfig3 = 0x12
-RegCameraConfig4 = 0x13
-RegCameraConfig5 = 0x14
-RegFrameWidthH = 0x1B
-RegFrameWidthL = 0x1C
-RegFrameHeightH = 0x1D
-RegFrameHeightL = 0x1E
-RegFrameCount = 0x1F
-RegVisionId = 0x20
-RegVisionConfig1 = 0x21
-RegVisionConfig2 = 0x22
-RegParamNum = 0x23
-RegParamId = 0x24
-RegVisionStatus1 = 0x2A
-RegVisionStatus2 = 0x2B
-RegVisionDetect1 = 0x30
-RegVisionDetect2 = 0x31
-RegResultNumber = 0x34
-RegResultId = 0x35
-RegReadStatus1 = 0x36
-RegParamValue1H = 0x70
-RegParamValue1L = 0x71
-RegParamValue2H = 0x72
-RegParamValue2L = 0x73
-RegParamValue3H = 0x74
-RegParamValue3L = 0x75
-RegParamValue4H = 0x76
-RegParamValue4L = 0x77
-RegParamValue5H = 0x78
-RegParamValue5L = 0x79
-RegResultData1H = 0x80
-RegResultData1L = 0x81
-RegResultData2H = 0x82
-RegResultData2L = 0x83
-RegResultData3H = 0x84
-RegResultData3L = 0x85
-RegResultData4H = 0x86
-RegResultData4L = 0x87
-RegResultData5H = 0x88
-RegResultData5L = 0x89
-RegSn = 0xD0
+kRegDeviceId = 0x01
+kRegFirmwareVersion = 0x02
+kRegRestart = 0x03
+kRegSensorConfig1 = 0x04
+kRegLock = 0x05
+kRegLed1 = 0x06
+kRegLed2 = 0x07
+kRegLedLevel = 0x08
+kRegUart = 0x09
+kRegUSBCongig = 0x0B
+kRegHWConfig = 0x0F
+kRegCameraConfig1 = 0x10
+kRegCameraConfig2 = 0x11
+kRegCameraConfig3 = 0x12
+kRegCameraConfig4 = 0x13
+kRegCameraConfig5 = 0x14
+kRegFrameWidthH = 0x1B
+kRegFrameWidthL = 0x1C
+kRegFrameHeightH = 0x1D
+kRegFrameHeightL = 0x1E
+kRegFrameCount = 0x1F
+kRegVisionId = 0x20
+kRegVisionConfig1 = 0x21
+kRegVisionConfig2 = 0x22
+kRegParamNum = 0x23
+kRegParamId = 0x24
+kRegVisionStatus1 = 0x2A
+kRegVisionStatus2 = 0x2B
+kRegVisionDetect1 = 0x30
+kRegVisionDetect2 = 0x31
+kRegResultNumber = 0x34
+kRegResultId = 0x35
+kRegReadStatus1 = 0x36
+kRegParamValue1H = 0x70
+kRegParamValue1L = 0x71
+kRegParamValue2H = 0x72
+kRegParamValue2L = 0x73
+kRegParamValue3H = 0x74
+kRegParamValue3L = 0x75
+kRegParamValue4H = 0x76
+kRegParamValue4L = 0x77
+kRegParamValue5H = 0x78
+kRegParamValue5L = 0x79
+kRegResultData1H = 0x80
+kRegResultData1L = 0x81
+kRegResultData2H = 0x82
+kRegResultData2L = 0x83
+kRegResultData3H = 0x84
+kRegResultData3L = 0x85
+kRegResultData4H = 0x86
+kRegResultData4L = 0x87
+kRegResultData5H = 0x88
+kRegResultData5L = 0x89
+kRegSn = 0xD0
 
 
 # sentry_led
-Led1 = 0x00
-Led2 = 0x01
-LedAll = 0x02
+kLed1 = 0x00
+kLed2 = 0x01
+kLedAll = 0x02
 
 # sentry_mode
-SerialMode = 0x00
-I2CMode = 0x01
-UnknownMode = 0x02
+kSerialMode = 0x00
+kI2CMode = 0x01
+kUnknownMode = 0x02
 
 # sentry_baudrate
-Baud9600 = 0x00
-Baud19200 = 0x01
-Baud38400 = 0x02
-Baud57600 = 0x03
-Baud115200 = 0x04
-Baud921600 = 0x05
-Baud1152000 = 0x06
-Baud2000000 = 0x07
+kBaud9600 = 0x00
+kBaud19200 = 0x01
+kBaud38400 = 0x02
+kBaud57600 = 0x03
+kBaud115200 = 0x04
+kBaud921600 = 0x05
+kBaud1152000 = 0x06
+kBaud2000000 = 0x07
 
 # sentry_obj_info
-Status = 1
-XValue = 2
-YValue = 3
-WidthValue = 4
-HeightValue = 5
-Label = 6
-RValue = 7
-GValue = 8
-BValue = 9
+kStatus = 1
+kXValue = 2
+kYValue = 3
+kWidthValue = 4
+kHeightValue = 5
+kLabel = 6
+kRValue = 7
+kGValue = 8
+kBValue = 9
 
 # sentry_camera_zoom
-ZoomDefault = 0
-Zoom1 = 1
-Zoom2 = 2
-Zoom3 = 3
-Zoom4 = 4
-Zoom5 = 5
+kZoomDefault = 0
+kZoom1 = 1
+kZoom2 = 2
+kZoom3 = 3
+kZoom4 = 4
+kZoom5 = 5
 
 # sentry_camera_fps
-FPSNormal = 0
-FPSHigh = 1
+kFPSNormal = 0
+kFPSHigh = 1
 
 # sentry_camera_white_balance
-AutoWhiteBalance = 0
-LockWhiteBalance = 1
-WhiteLight = 2
-YellowLight = 3
-WhiteBalanceCalibrating = 4
+kAutoWhiteBalance = 0
+kLockWhiteBalance = 1
+kWhiteLight = 2
+kYellowLight = 3
+kWhiteBalanceCalibrating = 4
 
 LOG_OFF = 60
 LOG_CRITICAL = 50
@@ -290,26 +290,26 @@ class SentryI2CMethod:
 
             return (SENTRY_READ_TIMEOUT, 0)
 
-    def __get_result_data(self, RegResultDataL, RegResultDataH):
-        err, result_data_tmp1 = self.Get(RegResultDataL)
+    def __get_result_data(self, kRegResultDataL, kRegResultDataH):
+        err, result_data_tmp1 = self.Get(kRegResultDataL)
         if err:
             return (err, 0)
-        err, result_data_tmp2 = self.Get(RegResultDataH)
+        err, result_data_tmp2 = self.Get(kRegResultDataH)
         if err:
             return (err, 0)
 
         return (err, result_data_tmp2 << 8 | result_data_tmp1)
 
     def Read(self, vision_type, vision_state):
-        err = self.Set(RegVisionId, vision_type)
+        err = self.Set(kRegVisionId, vision_type)
         if err:
             return (err, vision_state)
 
-        err, vision_state.frame = self.Get(RegFrameCount)
+        err, vision_state.frame = self.Get(kRegFrameCount)
         if err:
             return (err, vision_state)
 
-        err, vision_state.detect = self.Get(RegResultNumber)
+        err, vision_state.detect = self.Get(kRegResultNumber)
         if err:
             return (err, vision_state)
 
@@ -318,61 +318,61 @@ class SentryI2CMethod:
 
         vision_state.detect = SENTRY_MAX_RESULT if SENTRY_MAX_RESULT < vision_state.detect else vision_state.detect
 
-        if VisionQrCode == vision_type:
+        if kVisionQrCode == vision_type:
             vision_state.detect = 1
 
         for i in range(vision_state.detect):
-            err = self.Set(RegResultId, i+1)
+            err = self.Set(kRegResultId, i+1)
             if err:
                 return (err, vision_state)
 
             err, vision_state.result[i].data1 = self.__get_result_data(
-                RegResultData1L, RegResultData1H)
+                kRegResultData1L, kRegResultData1H)
             if err:
                 return (err, vision_state)
             err, vision_state.result[i].data2 = self.__get_result_data(
-                RegResultData2L, RegResultData2H)
+                kRegResultData2L, kRegResultData2H)
             if err:
                 return (err, vision_state)
             err, vision_state.result[i].data3 = self.__get_result_data(
-                RegResultData3L, RegResultData3H)
+                kRegResultData3L, kRegResultData3H)
             if err:
                 return (err, vision_state)
             err, vision_state.result[i].data4 = self.__get_result_data(
-                RegResultData4L, RegResultData4H)
+                kRegResultData4L, kRegResultData4H)
             if err:
                 return (err, vision_state)
             err, vision_state.result[i].data5 = self.__get_result_data(
-                RegResultData5L, RegResultData5H)
+                kRegResultData5L, kRegResultData5H)
             if err:
                 return (err, vision_state)
 
         return (SENTRY_OK, vision_state)
 
     def SetParam(self, vision_id, param, param_id):
-        err = self.Set(RegVisionId, vision_id)
+        err = self.Set(kRegVisionId, vision_id)
         if err:
             return err
 
-        err = self.Set(RegParamId, param_id+1)
+        err = self.Set(kRegParamId, param_id+1)
         if err:
             return err
 
-        self.Set(RegParamValue1H, param[0])
-        self.Set(RegParamValue1H, param[1])
-        self.Set(RegParamValue2H, param[2])
-        self.Set(RegParamValue2H, param[3])
-        self.Set(RegParamValue3H, param[4])
-        self.Set(RegParamValue3H, param[5])
-        self.Set(RegParamValue4H, param[6])
-        self.Set(RegParamValue4H, param[7])
-        self.Set(RegParamValue5H, param[8])
-        self.Set(RegParamValue5H, param[9])
+        self.Set(kRegParamValue1H, param[0])
+        self.Set(kRegParamValue1H, param[1])
+        self.Set(kRegParamValue2H, param[2])
+        self.Set(kRegParamValue2H, param[3])
+        self.Set(kRegParamValue3H, param[4])
+        self.Set(kRegParamValue3H, param[5])
+        self.Set(kRegParamValue4H, param[6])
+        self.Set(kRegParamValue4H, param[7])
+        self.Set(kRegParamValue5H, param[8])
+        self.Set(kRegParamValue5H, param[9])
 
         return SENTRY_OK
 
     def ReadQrCode(self, vision_state):
-        err, vision_state = self.Read(VisionQrCode, vision_state)
+        err, vision_state = self.Read(kVisionQrCode, vision_state)
         if err:
             return err, None
 
@@ -382,11 +382,11 @@ class SentryI2CMethod:
             result_id = int(i / 5 + 2)
             offset = i % 5
             if 0 == i % 5:
-                err = self.Set(RegResultId, result_id)
+                err = self.Set(kRegResultId, result_id)
                 if err:
                     return err, None
 
-            err, bytec = self.Get(RegResultData1L + 2 * offset)
+            err, bytec = self.Get(kRegResultData1L + 2 * offset)
             if err:
                 return err, vision_state
             vision_state.result[0].bytestr += chr(bytec)
@@ -461,9 +461,9 @@ class SentryUartMethod:
 
         return (SENTRY_PROTOC_OK, tuple(data_list[3:]))
 
-    def SetBuadrate(self, baud=Baud9600):
-        baud_em = (Baud9600, Baud19200, Baud38400, Baud57600,
-                   Baud115200, Baud921600, Baud1152000, Baud2000000)
+    def SetBuadrate(self, baud=kBaud9600):
+        baud_em = (kBaud9600, kBaud19200, kBaud38400, kBaud57600,
+                   kBaud115200, kBaud921600, kBaud1152000, kBaud2000000)
         baud_se = (9600, 19200, 38400, 57600, 115200, 921600, 1152000, 2000000)
         if baud in baud_em:
             i = baud_em.index(baud)
@@ -671,7 +671,7 @@ class SentryUartMethod:
     def ReadQrCode(self, qrcode):
 
         data_list = [SENTRY_PROTOC_START, 0, self.__mu_address,
-                     SENTRY_PROTOC_GET_RESULT, VisionQrCode, 0, 0]
+                     SENTRY_PROTOC_GET_RESULT, kVisionQrCode, 0, 0]
 
         data_list[1] = len(data_list)+2
         cheak_num = 0
@@ -698,7 +698,7 @@ class SentryUartMethod:
             err, data = self.__protocol_read()
 
             if err == SENTRY_PROTOC_OK:
-                if data[0] == SENTRY_PROTOC_OK or data[3] == VisionQrCode:
+                if data[0] == SENTRY_PROTOC_OK or data[3] == kVisionQrCode:
                     if data[1] == SENTRY_PROTOC_GET_RESULT:
                         qrcode.frame = data[2]
                         qrcode.detect = 0
@@ -760,14 +760,14 @@ class Sentry:
             if self.__debug:
                 self.__debug.setLevel(LOG_OFF)
 
-    def __SensorLockReg(self, lock: bool):
-        return self.__stream.Set(RegLock, lock)
+    def __SensorLockkReg(self, lock: bool):
+        return self.__stream.Set(kRegLock, lock)
 
     def __SensorStartupCheck(self):
         err_count = 0
         while True:
             err_count += 1
-            err, start_up = self.__stream.Get(RegSensorConfig1)
+            err, start_up = self.__stream.Get(kRegSensorConfig1)
             if err:
                 self.Logger(LOG_ERROR, "SensorStartupCheck error:%d!"%err)
                 return err
@@ -784,7 +784,7 @@ class Sentry:
         err_count = 0
         while True:
             err_count += 1
-            err, protocol_version = self.__stream.Get(RegDeviceId)
+            err, protocol_version = self.__stream.Get(kRegDeviceId)
             if (not err) and protocol_version == SENTRY_DEVICE_ID:
                 break
             if err_count > 3:
@@ -795,17 +795,17 @@ class Sentry:
 
     def GetImageShape(self):
         tmp = [0, 0]
-        err, tmp[0] = self.__stream.Get(RegFrameWidthL)
+        err, tmp[0] = self.__stream.Get(kRegFrameWidthL)
         if err:
             return err
-        err, tmp[1] = self.__stream.Get(RegFrameWidthH)
+        err, tmp[1] = self.__stream.Get(kRegFrameWidthH)
         if err:
             return err
         self.__img_w = tmp[1] << 8 | tmp[0]
-        err, tmp[0] = self.__stream.Get(RegFrameHeightL)
+        err, tmp[0] = self.__stream.Get(kRegFrameHeightL)
         if err:
             return err
-        err, tmp[1] = self.__stream.Get(RegFrameHeightH)
+        err, tmp[1] = self.__stream.Get(kRegFrameHeightH)
         if err:
             return err
         self.__img_h = tmp[1] << 8 | tmp[0]
@@ -839,7 +839,7 @@ class Sentry:
 
         return SENTRY_OK
 
-    def begin(self, communication_port=None,baud=Baud9600):
+    def begin(self, communication_port=None,baud=kBaud9600):
         if "I2C" == communication_port.__class__.__name__:
             self.__stream = SentryI2CMethod(
                 self.__address, communication_port, logger=self.__logger)
@@ -878,7 +878,7 @@ class Sentry:
         '''
          Note: when getting the vision status, if the block is true, it will wait until the vision_type result is updated   
         '''
-        if object_inf == Status:
+        if object_inf == kStatus:
             err = True
             while err:
                 err = self.UpdateResult(vision_type)
@@ -887,11 +887,11 @@ class Sentry:
         return self.__read(vision_type, object_inf, obj_id)
 
     def SetParamNum(self, vision_type, max_num):
-        err = self.__stream.Set(RegVisionId, vision_type)
+        err = self.__stream.Set(kRegVisionId, vision_type)
         if err:
             return err
 
-        err = self.__stream.Set(RegParamNum, max_num)
+        err = self.__stream.Set(kRegParamNum, max_num)
 
         return err
 
@@ -907,19 +907,19 @@ class Sentry:
         return self.__stream.SetParam(vision_type, params, param_id)
 
     def GetVisionState(self, vision_type):
-        if vision_type >= VisionMaxType:
+        if vision_type >= kVisionMaxType:
             return 0
 
         return self.__vision_states[vision_type-1]
 
     def VisionSetStatus(self, vision_type, enable: bool):
 
-        err = self.__stream.Set(RegVisionId, vision_type)
+        err = self.__stream.Set(kRegVisionId, vision_type)
         if err:
             return err
 
         err, vision_config_reg_value = self.__stream.Get(
-            RegVisionConfig1)
+            kRegVisionConfig1)
         if err:
             return err
 
@@ -929,7 +929,7 @@ class Sentry:
             vision_config_reg_value |= enable & 0x01
 
             err = self.__stream.Set(
-                RegVisionConfig1, vision_config_reg_value)
+                kRegVisionConfig1, vision_config_reg_value)
             if err:
                 return err
 
@@ -941,18 +941,18 @@ class Sentry:
 
     def VisionSetDefault(self, vision_type):
 
-        err = self.__stream.Set(RegVisionId, vision_type)
+        err = self.__stream.Set(kRegVisionId, vision_type)
         if err:
             return err
         err, vision_config_reg_value = self.__stream.Get(
-            RegVisionConfig1)
+            kRegVisionConfig1)
         if err:
             return err
 
         vision_config_reg_value &= 0xfd
         vision_config_reg_value |= 0x01 << 1
         default_setting = (vision_config_reg_value >> 1) & 0x01
-        err = self.__stream.Set(RegVisionConfig1,
+        err = self.__stream.Set(kRegVisionConfig1,
                                 vision_config_reg_value)
         if err:
             return err
@@ -962,7 +962,7 @@ class Sentry:
             sleep_ms(10)
 
             err, vision_config_reg_value = self.__stream.Get(
-                RegVisionConfig1)
+                kRegVisionConfig1)
             if err:
                 return err
             default_setting = (vision_config_reg_value >> 1) & 0x01
@@ -970,12 +970,12 @@ class Sentry:
         return SENTRY_OK
 
     def VisionGetStatus(self, vision_type):
-        err = self.__stream.Set(RegVisionId, vision_type)
+        err = self.__stream.Set(kRegVisionId, vision_type)
         if err:
             return 0
 
         err, vision_status1 = self.__stream.Get(
-            RegVisionConfig1)
+            kRegVisionConfig1)
 
         if err:
             return 0
@@ -984,27 +984,27 @@ class Sentry:
 
     def UpdateResult(self, vision_type):
 
-        if vision_type >= VisionMaxType:
+        if vision_type >= kVisionMaxType:
             return 0
 
         vision_state = self.__vision_states[vision_type-1]
 
-        err, frame = self.__stream.Get(RegFrameCount)
+        err, frame = self.__stream.Get(kRegFrameCount)
         if err:
             return err
 
         if frame == vision_state.frame:
             return SENTRY_FAIL
 
-        while SENTRY_OK != self.__SensorLockReg(True):
+        while SENTRY_OK != self.__SensorLockkReg(True):
             pass
 
-        if vision_type == VisionQrCode:
+        if vision_type == kVisionQrCode:
             err, vision_state = self.__stream.ReadQrCode(vision_state)
         else:
             err, vision_state = self.__stream.Read(vision_type, vision_state)
 
-        while SENTRY_OK != self.__SensorLockReg(False):
+        while SENTRY_OK != self.__SensorLockkReg(False):
             pass
 
         self.__vision_states[vision_type-1] = vision_state
@@ -1016,7 +1016,7 @@ class Sentry:
 
     def __read(self, vision_type, object_inf, obj_id):
 
-        if vision_type >= VisionMaxType:
+        if vision_type >= kVisionMaxType:
             return 0
 
         obj_id = SENTRY_MAX_RESULT if obj_id > SENTRY_MAX_RESULT else obj_id
@@ -1025,53 +1025,53 @@ class Sentry:
         if vision_state == None:
             return 0
 
-        if object_inf == Status:
+        if object_inf == kStatus:
             return vision_state.detect
-        elif object_inf == XValue:
+        elif object_inf == kXValue:
             return int(vision_state.result[obj_id].data1*100/self.__img_w)
-        elif object_inf == YValue:
+        elif object_inf == kYValue:
             return int(vision_state.result[obj_id].data2*100/self.__img_h)
-        elif object_inf == WidthValue:
+        elif object_inf == kWidthValue:
             return int(vision_state.result[obj_id].data3*100/self.__img_w)
-        elif object_inf == HeightValue:
+        elif object_inf == kHeightValue:
             return int(vision_state.result[obj_id].data4*100/self.__img_h)
-        elif object_inf == Label:
+        elif object_inf == kLabel:
             return vision_state.result[obj_id].data5
-        elif object_inf == GValue:
+        elif object_inf == kGValue:
             return vision_state.result[obj_id].data1
-        elif object_inf == RValue:
+        elif object_inf == kRValue:
             return vision_state.result[obj_id].data2
-        elif object_inf == BValue:
+        elif object_inf == kBValue:
             return vision_state.result[obj_id].data3
         else:
             return 0
 
     def GetQrCodeValue(self):
-        vision_state = self.__vision_states[VisionQrCode-1]
+        vision_state = self.__vision_states[kVisionQrCode-1]
         if vision_state == None:
             return ""
 
         return vision_state.result[0].bytestr
 
     def SensorSetRestart(self):
-        err = self.__stream.Set(RegRestart, 1)
+        err = self.__stream.Set(kRegRestart, 1)
         if err:
             return err
 
         return SENTRY_OK
 
     def SensorSetDefault(self):
-        err, sensor_config_reg_value = self.__stream.Get(RegSensorConfig1)
+        err, sensor_config_reg_value = self.__stream.Get(kRegSensorConfig1)
         if err:
             return err
 
         sensor_config_reg_value |= 0x08
 
-        err = self.__stream.Set(RegSensorConfig1,
+        err = self.__stream.Set(kRegSensorConfig1,
                                 sensor_config_reg_value)
         while True:
             err, sensor_config_reg_value = self.__stream.Get(
-                RegSensorConfig1)
+                kRegSensorConfig1)
             if err:
                 return err
 
@@ -1083,17 +1083,17 @@ class Sentry:
 
     def LedSetMode(self, led, manual: bool, hold: bool):
 
-        if Led1 == led:
-            address = RegLed1
+        if kLed1 == led:
+            address = kRegLed1
 
-        elif Led2 == led:
-            address = RegLed2
+        elif kLed2 == led:
+            address = kRegLed2
 
-        elif LedAll == led:
-            err = self.LedSetMode(Led1, manual, hold)
+        elif kLedAll == led:
+            err = self.LedSetMode(kLed1, manual, hold)
             if err:
                 return err
-            err = self.LedSetMode(Led2, manual, hold)
+            err = self.LedSetMode(kLed2, manual, hold)
             return err
 
         else:
@@ -1121,28 +1121,28 @@ class Sentry:
 
     def LedSetColor(self, led, detected_color, undetected_color, level):
 
-        err, led_level = self.__stream.Get(RegLedLevel)
+        err, led_level = self.__stream.Get(kRegLedLevel)
         if err:
             return err
 
-        if Led1 == led:
-            address = RegLed1
+        if kLed1 == led:
+            address = kRegLed1
             led_level &= 0xF0
             led_level |= (level & 0x0F)
-            self.__stream.Set(RegLedLevel, led_level)
+            self.__stream.Set(kRegLedLevel, led_level)
 
-        elif Led2 == led:
-            address = RegLed2
+        elif kLed2 == led:
+            address = kRegLed2
             led_level &= 0x0F
             led_level |= (level << 4)
-            self.__stream.Set(RegLedLevel, led_level)
+            self.__stream.Set(kRegLedLevel, led_level)
 
-        elif LedAll == led:
-            err = self.LedSetColor(Led1, detected_color,
+        elif kLedAll == led:
+            err = self.LedSetColor(kLed1, detected_color,
                                    undetected_color, level)
             if err:
                 return err
-            err = self.LedSetColor(Led2, detected_color,
+            err = self.LedSetColor(kLed2, detected_color,
                                    undetected_color, level)
             return err
 
@@ -1169,7 +1169,7 @@ class Sentry:
     def CameraSetZoom(self, zoom):
 
         err, camera_reg_value = self.__stream.Get(
-            RegCameraConfig1)
+            kRegCameraConfig1)
         if err:
             return err
 
@@ -1179,7 +1179,7 @@ class Sentry:
             camera_reg_value &= 0xf8
             camera_reg_value |= zoom & 0x07
             err = self.__stream.Set(
-                RegCameraConfig1, camera_reg_value)
+                kRegCameraConfig1, camera_reg_value)
             if err:
                 return err
 
@@ -1188,7 +1188,7 @@ class Sentry:
     def CameraSetRotate(self, enable):
 
         err, camera_reg_value = self.__stream.Get(
-            RegCameraConfig1)
+            kRegCameraConfig1)
         if err:
             return err
 
@@ -1198,7 +1198,7 @@ class Sentry:
             camera_reg_value |= (enable & 0x01) << 3
 
             err = self.__stream.Set(
-                RegCameraConfig1, camera_reg_value)
+                kRegCameraConfig1, camera_reg_value)
             if err:
                 return err
 
@@ -1207,7 +1207,7 @@ class Sentry:
     def CameraSetFPS(self, fps):
 
         err, camera_reg_value = self.__stream.Get(
-            RegCameraConfig1)
+            kRegCameraConfig1)
         if err:
             return err
 
@@ -1216,7 +1216,7 @@ class Sentry:
             camera_reg_value &= 0xef
             camera_reg_value |= (fps & 0x01) << 4
             err = self.__stream.Set(
-                RegCameraConfig1, camera_reg_value)
+                kRegCameraConfig1, camera_reg_value)
             if err:
                 return err
 
@@ -1225,22 +1225,22 @@ class Sentry:
     def CameraSetAwb(self, awb):
 
         err, camera_reg_value = self.__stream.Get(
-            RegCameraConfig1)
+            kRegCameraConfig1)
         if err:
             return err
 
         white_balance = (camera_reg_value >> 5) & 0x03
 
-        if LockWhiteBalance == awb:
+        if kLockWhiteBalance == awb:
             camera_reg_value &= 0x1f
             camera_reg_value |= (awb & 0x03) << 5
             err = self.__stream.Set(
-                RegCameraConfig1, camera_reg_value)
+                kRegCameraConfig1, camera_reg_value)
             if err:
                 return err
             while (camera_reg_value >> 7) == 0:
                 err, camera_reg_value = self.__stream.Get(
-                    RegCameraConfig1)
+                    kRegCameraConfig1)
                 if err:
                     return err
 
@@ -1248,7 +1248,7 @@ class Sentry:
             camera_reg_value &= 0x1f
             camera_reg_value |= (awb & 0x03) << 5
             err = self.__stream.Set(
-                RegCameraConfig1, camera_reg_value)
+                kRegCameraConfig1, camera_reg_value)
             if err:
                 return err
 
@@ -1257,7 +1257,7 @@ class Sentry:
     def CameraGetZoom(self):
 
         err, camera_reg_value = self.__stream.Get(
-            RegCameraConfig1)
+            kRegCameraConfig1)
         if err:
             pass
 
@@ -1266,7 +1266,7 @@ class Sentry:
     def CameraGetAwb(self):
 
         err, camera_reg_value = self.__stream.Get(
-            RegCameraConfig1)
+            kRegCameraConfig1)
         if err:
             pass
 
@@ -1275,7 +1275,7 @@ class Sentry:
     def CameraGetRotate(self):
 
         err, camera_reg_value = self.__stream.Get(
-            RegCameraConfig1)
+            kRegCameraConfig1)
         if err:
             pass
 
@@ -1284,19 +1284,19 @@ class Sentry:
     def CameraGetFPS(self):
 
         err, camera_reg_value = self.__stream.Get(
-            RegCameraConfig1)
+            kRegCameraConfig1)
         if err:
             pass
 
         return (camera_reg_value >> 4) & 0x01
 
     def UartSetBaudrate(self, baud):
-        err, uart_reg_value = self.__stream.Get(RegUart)
+        err, uart_reg_value = self.__stream.Get(kRegUart)
         baudrate = uart_reg_value & 0x07
         if (not err) and baudrate != baud:
             uart_reg_value &= 0xf8
             uart_reg_value |= baud & 0x07
-            err = self.__stream.Set(RegUart, uart_reg_value)
+            err = self.__stream.Set(kRegUart, uart_reg_value)
         if not err:
             if 'SentryUartMethod' == self.__stream.__class__.__name__:
                 self.__stream.SetBuadrate(baud)
