@@ -71,11 +71,11 @@ kRegFirmwareVersion = 0x02
 kRegRestart = 0x03
 kRegSensorConfig1 = 0x04
 kRegLock = 0x05
-kRegLed1 = 0x06
-kRegLed2 = 0x07
+kRegLed = 0x06
 kRegLedLevel = 0x08
 kRegUart = 0x09
 kRegUSBCongig = 0x0B
+kRegLCDCongig = 0x0B
 kRegHWConfig = 0x0F
 kRegCameraConfig1 = 0x10
 kRegCameraConfig2 = 0x11
@@ -121,11 +121,6 @@ kRegResultData5H = 0x88
 kRegResultData5L = 0x89
 kRegSn = 0xD0
 
-
-# sentry_led
-kLed1 = 0x00
-kLed2 = 0x01
-kLedAll = 0x02
 
 # sentry_mode
 kSerialMode = 0x00
@@ -780,6 +775,8 @@ class Sentry:
                 self.Logger(LOG_ERROR, "SensorStartupCheck error!")
                 return SENTRY_UNKNOWN_PROTOCOL
 
+        return SENTRY_OK
+        
     def __ProtocolVersionCheck(self):
         err_count = 0
         while True:
@@ -973,7 +970,7 @@ class Sentry:
         err = self.__stream.Set(kRegVisionId, vision_type)
         if err:
             return 0
-
+ 
         err, vision_status1 = self.__stream.Get(
             kRegVisionConfig1)
 
@@ -1083,23 +1080,7 @@ class Sentry:
 
     def LedSetMode(self, led, manual: bool, hold: bool):
 
-        if kLed1 == led:
-            address = kRegLed1
-
-        elif kLed2 == led:
-            address = kRegLed2
-
-        elif kLedAll == led:
-            err = self.LedSetMode(kLed1, manual, hold)
-            if err:
-                return err
-            err = self.LedSetMode(kLed2, manual, hold)
-            return err
-
-        else:
-            return SENTRY_UNSUPPORT_PARAM
-
-        err, led_reg_value = self.__stream.Get(address)
+        err, led_reg_value = self.__stream.Get(kRegLed)
         if err:
             return err
 
@@ -1113,7 +1094,7 @@ class Sentry:
             led_reg_value &= 0xef
             led_reg_value |= (hold & 0x01) << 4
 
-            err = self.__stream.Set(address, led_reg_value)
+            err = self.__stream.Set(kRegLed, led_reg_value)
             if err:
                 return err
 
@@ -1125,32 +1106,11 @@ class Sentry:
         if err:
             return err
 
-        if kLed1 == led:
-            address = kRegLed1
-            led_level &= 0xF0
-            led_level |= (level & 0x0F)
-            self.__stream.Set(kRegLedLevel, led_level)
+        led_level &= 0xF0
+        led_level |= (level & 0x0F)
+        self.__stream.Set(kRegLedLevel, led_level)
 
-        elif kLed2 == led:
-            address = kRegLed2
-            led_level &= 0x0F
-            led_level |= (level << 4)
-            self.__stream.Set(kRegLedLevel, led_level)
-
-        elif kLedAll == led:
-            err = self.LedSetColor(kLed1, detected_color,
-                                   undetected_color, level)
-            if err:
-                return err
-            err = self.LedSetColor(kLed2, detected_color,
-                                   undetected_color, level)
-            return err
-
-        else:
-            return SENTRY_UNSUPPORT_PARAM
-
-        err, led_reg_value = self.__stream.Get(address)
-
+        err, led_reg_value = self.__stream.Get(kRegLed)
         if err:
             return err
 
@@ -1160,7 +1120,22 @@ class Sentry:
         led_reg_value &= 0x1f
         led_reg_value |= (undetected_color & 0x07) << 5
 
-        err = self.__stream.Set(address, led_reg_value)
+        err = self.__stream.Set(kRegLed, led_reg_value)
+        if err:
+            return err
+
+        return SENTRY_OK
+
+    def LcdSetColor(self, on):
+
+        err, lcd_reg_value = self.__stream.Get(kRegLCDCongig)
+        if err:
+            return err
+
+        lcd_reg_value &= 0xFe
+        lcd_reg_value |= (on & 0x01)
+
+        err = self.__stream.Set(kRegLed, lcd_reg_value)
         if err:
             return err
 
@@ -1249,6 +1224,78 @@ class Sentry:
             camera_reg_value |= (awb & 0x03) << 5
             err = self.__stream.Set(
                 kRegCameraConfig1, camera_reg_value)
+            if err:
+                return err
+
+        return err
+
+    def CameraSetBrightness(self, Brightness):
+
+        err, camera_reg_value = self.__stream.Get(
+            kRegCameraConfig3)
+        if err:
+            return err
+
+        gBrightness = (camera_reg_value) & 0x0f
+        if Brightness != gBrightness:
+            camera_reg_value &= 0xf0
+            camera_reg_value |= (Brightness & 0x0f)
+            err = self.__stream.Set(
+                kRegCameraConfig3, camera_reg_value)
+            if err:
+                return err
+
+        return err
+
+    def CameraSetContrast(self, Contrast):
+
+        err, camera_reg_value = self.__stream.Get(
+            kRegCameraConfig3)
+        if err:
+            return err
+
+        gContrast = (camera_reg_value >> 4) & 0x0f
+        if Contrast != gContrast:
+            camera_reg_value &= 0x0f
+            camera_reg_value |= (Contrast & 0x0f) << 4
+            err = self.__stream.Set(
+                kRegCameraConfig3, camera_reg_value)
+            if err:
+                return err
+
+        return err
+
+    def CameraSetSaturation(self, Saturation):
+
+        err, camera_reg_value = self.__stream.Get(
+            kRegCameraConfig4)
+        if err:
+            return err
+
+        gSaturation = (camera_reg_value) & 0x0f
+        if Saturation != gSaturation:
+            camera_reg_value &= 0xf0
+            camera_reg_value |= (Saturation & 0x0f)
+            err = self.__stream.Set(
+                kRegCameraConfig4, camera_reg_value)
+            if err:
+                return err
+
+        return err
+
+    def CameraSetShaprness(self, Shaprness):
+
+        err, camera_reg_value = self.__stream.Get(
+            kRegCameraConfig5)
+        if err:
+            return err
+
+        gShaprness = (camera_reg_value) & 0x0f
+        if Shaprness != gShaprness:
+            camera_reg_value &= 0xf0
+            camera_reg_value |= (Shaprness & 0x0f)
+            err = self.__stream.Set(
+                kRegCameraConfig5, camera_reg_value)
             if err:
                 return err
 
