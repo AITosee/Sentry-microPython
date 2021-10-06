@@ -342,6 +342,24 @@ class SentryI2CMethod:
             if err:
                 return (err, vision_state)
 
+            if kVisionQrCode == vision_type:
+                vision_state.result[i].bytestr = ""
+                for j in range(vision_state.result[i].data5):
+                    result_id = int(j / 5 + 2)
+                    offset = j % 5
+                    if 0 == j % 5:
+                        err = self.Set(kRegResultId, result_id)
+                        if err:
+                            return err, None
+
+                    err, bytec = self.Get(kRegResultData1L + 2 * offset)
+                    if err:
+                        return err, vision_state
+                    vision_state.result[i].bytestr += chr(bytec)
+
+        return SENTRY_OK, vision_state
+
+
         return (SENTRY_OK, vision_state)
 
     def SetParam(self, vision_id, param, param_id):
@@ -365,28 +383,6 @@ class SentryI2CMethod:
         self.Set(kRegParamValue5H, param[9])
 
         return SENTRY_OK
-
-    def ReadQrCode(self, vision_state):
-        err, vision_state = self.Read(kVisionQrCode, vision_state)
-        if err:
-            return err, None
-
-        vision_state.result[0].bytestr = ""
-
-        for i in range(vision_state.result[0].data5):
-            result_id = int(i / 5 + 2)
-            offset = i % 5
-            if 0 == i % 5:
-                err = self.Set(kRegResultId, result_id)
-                if err:
-                    return err, None
-
-            err, bytec = self.Get(kRegResultData1L + 2 * offset)
-            if err:
-                return err, vision_state
-            vision_state.result[0].bytestr += chr(bytec)
-
-        return SENTRY_OK, vision_state
 
 
 class SentryUartMethod:
@@ -601,6 +597,11 @@ class SentryUartMethod:
                                                                    i + 12] << 8 | data[10 * i + 13]
                             vision_state.result[v_id].data5 = data[10 *
                                                                    i + 14] << 8 | data[10 * i + 15]
+                            if kVisionQrCode == vision_type:                       
+                                vision_state.result[v_id].bytestr = ""
+                                for i in range(vision_state.result[v_id].data5):
+                                    vision_state.result[v_id].bytestr += chr(
+                                        data[17 + 2 * i])
 
                         if data[0] == SENTRY_PROTOC_RESULT_NOT_END:
                             continue
@@ -662,70 +663,6 @@ class SentryUartMethod:
                     return SENTRY_READ_TIMEOUT
             else:
                  return SENTRY_FAIL
-                 
-    def ReadQrCode(self, qrcode):
-
-        data_list = [SENTRY_PROTOC_START, 0, self.__mu_address,
-                     SENTRY_PROTOC_GET_RESULT, kVisionQrCode, 0, 0]
-
-        data_list[1] = len(data_list)+2
-        cheak_num = 0
-        for da in data_list:
-            cheak_num += da
-
-        data_list.append(cheak_num & 0xff)
-        data_list.append(SENTRY_PROTOC_END)
-
-        data = ustruct.pack(">"+"b"*len(data_list), *tuple(data_list))
-
-        if self.__logger:
-            self.Logger(LOG_DEBUG, "Read req-> %s",
-                        ' '.join(['%02x' % b for b in data]))
-
-        if self.__communication_port.any():
-            # Clear cache before sending
-            self.__communication_port.read()
-        self.__communication_port.write(data)
-
-        try_time = 0
-
-        while True:
-            err, data = self.__protocol_read()
-
-            if err == SENTRY_PROTOC_OK:
-                if data[0] == SENTRY_PROTOC_OK or data[3] == kVisionQrCode:
-                    if data[1] == SENTRY_PROTOC_GET_RESULT:
-                        qrcode.frame = data[2]
-                        qrcode.detect = 0
-                        if data[5] == 0:
-                            return (SENTRY_OK, qrcode)
-
-                        qrcode.detect = int((data[5] - data[4] + 1) > 0)
-                        if not qrcode.detect:
-                            return (SENTRY_OK, qrcode)
-
-                        qrcode.result[0].data1 = data[6] << 8 | data[7]
-                        qrcode.result[0].data2 = data[8] << 8 | data[9]
-                        qrcode.result[0].data3 = data[10] << 8 | data[11]
-                        qrcode.result[0].data4 = data[12] << 8 | data[13]
-                        qrcode.result[0].data5 = data[14] << 8 | data[15]
-
-                        qrcode.result[0].bytestr = ""
-                        for i in range(qrcode.result[0].data5):
-                            qrcode.result[0].bytestr += chr(
-                                data[17 + 2 * i])
-
-                        return (SENTRY_OK, qrcode)
-                    else:
-                        return (SENTRY_UNSUPPORT_PARAM, qrcode)
-
-            elif err == SENTRY_PROTOC_TIMEOUT:
-                try_time += 1
-                if try_time > 3:
-                    return (SENTRY_READ_TIMEOUT, qrcode)
-            else:
-                 return (SENTRY_FAIL, qrcode)
-
 
 class Sentry:
     """
@@ -996,10 +933,7 @@ class Sentry:
         while SENTRY_OK != self.__SensorLockkReg(True):
             pass
 
-        if vision_type == kVisionQrCode:
-            err, vision_state = self.__stream.ReadQrCode(vision_state)
-        else:
-            err, vision_state = self.__stream.Read(vision_type, vision_state)
+        err, vision_state = self.__stream.Read(vision_type, vision_state)
 
         while SENTRY_OK != self.__SensorLockkReg(False):
             pass
