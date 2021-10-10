@@ -1271,6 +1271,44 @@ class Sentry:
 
         return (camera_reg_value >> 4) & 0x01
 
+    def CameraGetBrightness(self, Brightness):
+
+        err, camera_reg_value = self.__stream.Get(
+            kRegCameraConfig3)
+        if err:
+            pass
+
+        return  (camera_reg_value) & 0x0f
+
+
+    def CameraGetContrast(self, Contrast):
+
+        err, camera_reg_value = self.__stream.Get(
+            kRegCameraConfig3)
+        if err:
+            pass
+
+        return (camera_reg_value >> 4) & 0x0f
+
+
+    def CameraGetSaturation(self, Saturation):
+
+        err, camera_reg_value = self.__stream.Get(
+            kRegCameraConfig4)
+        if err:
+            pass
+
+        return (camera_reg_value) & 0x0f
+
+    def CameraGetShaprness(self, Shaprness):
+
+        err, camera_reg_value = self.__stream.Get(
+            kRegCameraConfig5)
+        if err:
+            pass
+
+        return (camera_reg_value) & 0x0f
+
     def UartSetBaudrate(self, baud):
         err, uart_reg_value = self.__stream.Get(kRegUart)
         baudrate = uart_reg_value & 0x07
