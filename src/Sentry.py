@@ -1,4 +1,4 @@
-__version__ = "Sentry2 v0.0.1"
+__version__ = "Sentry2 v1.0.0"
 __author__ = "weiyanfengv@gmail.com"
 __license__ = "http://unlicense.org"
 
@@ -98,15 +98,16 @@ kRegSn = 0xD0
 
 
 # sentry_obj_info
-kStatus = 1
-kXValue = 2
-kYValue = 3
-kWidthValue = 4
-kHeightValue = 5
-kLabel = 6
-kRValue = 7
-kGValue = 8
-kBValue = 9
+class sentry_obj_info_e:
+    kStatus = 1
+    kXValue = 2
+    kYValue = 3
+    kWidthValue = 4
+    kHeightValue = 5
+    kLabel = 6
+    kRValue = 7
+    kGValue = 8
+    kBValue = 9
 
 # sentry_mode
 class sentry_mode_e:
@@ -144,6 +145,11 @@ class sentry_camera_zoom_e:
     kZoom3 = 3
     kZoom4 = 4
     kZoom5 = 5
+
+# sentry_camera_fps
+class sentry_camera_fps_e:
+    kFPSNormal = 0
+    kFPSHigh = 1
 
 # sentry_camera_white_balance
 class sentry_camera_white_balance_e:
@@ -899,7 +905,7 @@ class SentryBase:
         '''
          Note: when getting the vision status, if the block is true, it will wait until the vision_type result is updated   
         '''
-        if object_inf == kStatus:
+        if object_inf == sentry_obj_info_e.kStatus:
             err = True
             while err:
                 err = self.UpdateResult(vision_type)
@@ -1043,23 +1049,23 @@ class SentryBase:
         if vision_state == None:
             return 0
 
-        if object_inf == kStatus:
+        if object_inf == sentry_obj_info_e.kStatus:
             return vision_state.detect
-        elif object_inf == kXValue:
+        elif object_inf == sentry_obj_info_e.kXValue:
             return int(vision_state.result[obj_id].data1*100/self.__img_w)
-        elif object_inf == kYValue:
+        elif object_inf == sentry_obj_info_e.kYValue:
             return int(vision_state.result[obj_id].data2*100/self.__img_h)
-        elif object_inf == kWidthValue:
+        elif object_inf == sentry_obj_info_e.kWidthValue:
             return int(vision_state.result[obj_id].data3*100/self.__img_w)
-        elif object_inf == kHeightValue:
+        elif object_inf == sentry_obj_info_e.kHeightValue:
             return int(vision_state.result[obj_id].data4*100/self.__img_h)
-        elif object_inf == kLabel:
+        elif object_inf == sentry_obj_info_e.kLabel:
             return vision_state.result[obj_id].data5
-        elif object_inf == kGValue:
+        elif object_inf == sentry_obj_info_e.kGValue:
             return vision_state.result[obj_id].data1
-        elif object_inf == kRValue:
+        elif object_inf == sentry_obj_info_e.kRValue:
             return vision_state.result[obj_id].data2
-        elif object_inf == kBValue:
+        elif object_inf == sentry_obj_info_e.kBValue:
             return vision_state.result[obj_id].data3
         else:
             return 0

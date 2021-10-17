@@ -32,7 +32,7 @@ for i in range(param_num):
 err = sentry.VisionBegin(sentry_vision_e.kVisionColor)
 print("sentry.VisionBegin(sentry_vision_e.kVisionColor):0x%x"% err)
 
-obj_num = sentry.GetValue(sentry_vision_e.kVisionColor, kStatus)
+obj_num = sentry.GetValue(sentry_vision_e.kVisionColor, sentry_obj_info_e.kStatus)
 print("obj_num:%d"% obj_num)
 
 color = ('Black','White','Red','Yellow','Green','Purple','Blue')
@@ -40,12 +40,12 @@ color = ('Black','White','Red','Yellow','Green','Purple','Blue')
 tn = time.ticks_ms()
 while True:
     ts = tn;
-    obj_num = sentry.GetValue(sentry_vision_e.kVisionColor, kStatus)
+    obj_num = sentry.GetValue(sentry_vision_e.kVisionColor, sentry_obj_info_e.kStatus)
     tn = time.ticks_ms()
     if obj_num:
         print("Totally %d objects in %dms:"%( obj_num, tn - ts))
         for i in range(obj_num):
-            label = sentry.GetValue(sentry_vision_e.kVisionColor, kLabel, i)
+            label = sentry.GetValue(sentry_vision_e.kVisionColor, sentry_obj_info_e.kLabel, i)
             print("  obj[%d]: Label=%s"%(i,color[label-1]))
             
 
