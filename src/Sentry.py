@@ -5,7 +5,6 @@ __license__ = "http://unlicense.org"
 import ustruct  # pylint: disable=import-error
 from time import sleep_ms  # pylint: disable=no-name-in-module
 
-SENTRY_DEVICE_ID = 0x04
 SENTRY_FIRMWARE_VERSION = 0xFF
 
 SENTRY_MAX_RESULT = 25
@@ -98,31 +97,6 @@ kRegResultData5L = 0x89
 kRegSn = 0xD0
 
 
-# sentry_mode
-kSerialMode = 0x00
-kI2CMode = 0x01
-kUnknownMode = 0x02
-
-# sentry_led_color
-LedClose = 0
-LedRed = 1
-LedGreen = 2
-LedYellow = 3
-LedBlue = 4
-LedPurple = 5
-LedCyan = 6
-LedWhite = 7
-
-# sentry_baudrate
-kBaud9600 = 0x00
-kBaud19200 = 0x01
-kBaud38400 = 0x02
-kBaud57600 = 0x03
-kBaud115200 = 0x04
-kBaud921600 = 0x05
-kBaud1152000 = 0x06
-kBaud2000000 = 0x07
-
 # sentry_obj_info
 kStatus = 1
 kXValue = 2
@@ -134,24 +108,50 @@ kRValue = 7
 kGValue = 8
 kBValue = 9
 
-# sentry_camera_zoom
-kZoomDefault = 0
-kZoom1 = 1
-kZoom2 = 2
-kZoom3 = 3
-kZoom4 = 4
-kZoom5 = 5
+# sentry_mode
+class sentry_mode_e:
+    kSerialMode = 0x00
+    kI2CMode = 0x01
+    kUnknownMode = 0x02
 
-# sentry_camera_fps
-kFPSNormal = 0
-kFPSHigh = 1
+# sentry_led_color
+class sentry_led_color_e:
+    kLedClose = 0
+    kLedRed = 1
+    kLedGreen = 2
+    kLedYellow = 3
+    kLedBlue = 4
+    kLedPurple = 5
+    kLedCyan = 6
+    kLedWhite = 7
+
+# sentry_baudrate
+class sentry_baudrate_e:
+    kBaud9600 = 0x00
+    kBaud19200 = 0x01
+    kBaud38400 = 0x02
+    kBaud57600 = 0x03
+    kBaud115200 = 0x04
+    kBaud921600 = 0x05
+    kBaud1152000 = 0x06
+    kBaud2000000 = 0x07
+
+# sentry_camera_zoom
+class sentry_camera_zoom_e:
+    kZoomDefault = 0
+    kZoom1 = 1
+    kZoom2 = 2
+    kZoom3 = 3
+    kZoom4 = 4
+    kZoom5 = 5
 
 # sentry_camera_white_balance
-kAutoWhiteBalance = 0
-kLockWhiteBalance = 1
-kWhiteLight = 2
-kYellowLight = 3
-kWhiteBalanceCalibrating = 4
+class sentry_camera_white_balance_e:
+    kAutoWhiteBalance = 0
+    kLockWhiteBalance = 1
+    kWhiteLight = 2
+    kYellowLight = 3
+    kWhiteBalanceCalibrating = 4
 
 # Sentrys vision
 class sentry_vision_e:
@@ -448,9 +448,6 @@ class SentryI2CMethod:
                         return err, vision_state
                     vision_state.result[i].bytestr += chr(bytec)
 
-        return SENTRY_OK, vision_state
-
-
         return (SENTRY_OK, vision_state)
 
     def SetParam(self, vision_id, param, param_id):
@@ -543,14 +540,12 @@ class SentryUartMethod:
 
         return (SENTRY_PROTOC_OK, tuple(data_list[3:]))
 
-    def SetBuadrate(self, baud=kBaud9600):
-        baud_em = (kBaud9600, kBaud19200, kBaud38400, kBaud57600,
-                   kBaud115200, kBaud921600, kBaud1152000, kBaud2000000)
+    def SetBuadrate(self, baud=sentry_baudrate_e.kBaud9600):
+        baud_em = (0,1,2,3,4,5,6,7)
         baud_se = (9600, 19200, 38400, 57600, 115200, 921600, 1152000, 2000000)
         if baud in baud_em:
-            i = baud_em.index(baud)
-            self.Logger(LOG_CRITICAL, "SetBuadrate:%d", baud_se[i])
-            self.__communication_port.init(baudrate=baud_se[i], timeout=1000, timeout_char=10)
+            self.Logger(LOG_CRITICAL, "SetBuadrate:%d", baud_se[baud])
+            self.__communication_port.init(baudrate=baud_se[baud], timeout=1000, timeout_char=10)
 
     def Set(self, reg_address, value):
 
@@ -755,12 +750,13 @@ class SentryUartMethod:
             else:
                  return SENTRY_FAIL
 
-class Sentry2:
+class SentryBase:
     """
 
     """
 
-    def __init__(self, address=0x60, log_level=LOG_ERROR):
+    def __init__(self,device_id, address=0x60, log_level=LOG_ERROR):
+        self.__device_id = device_id
         self.__address = address
         self.__stream = None
         self.__img_w = 0
@@ -810,7 +806,7 @@ class Sentry2:
         while True:
             err_count += 1
             err, protocol_version = self.__stream.Get(kRegDeviceId)
-            if (not err) and protocol_version == SENTRY_DEVICE_ID:
+            if (not err) and protocol_version == self.__device_id:
                 break
             if err_count > 3:
                 self.Logger(LOG_ERROR, "ProtocolVersionCheck error!")
@@ -864,7 +860,7 @@ class Sentry2:
 
         return SENTRY_OK
 
-    def begin(self, communication_port=None,baud=kBaud9600):
+    def begin(self, communication_port=None,baud=sentry_baudrate_e.kBaud9600):
         if "I2C" == communication_port.__class__.__name__ or "MicroBitI2C" == communication_port.__class__.__name__:
             self.__stream = SentryI2CMethod(
                 self.__address, communication_port, logger=self.__logger)
@@ -1231,7 +1227,7 @@ class Sentry2:
 
         white_balance = (camera_reg_value >> 5) & 0x03
 
-        if kLockWhiteBalance == awb:
+        if sentry_camera_white_balance_e.kLockWhiteBalance == awb:
             camera_reg_value &= 0x1f
             camera_reg_value |= (awb & 0x03) << 5
             err = self.__stream.Set(
@@ -1362,7 +1358,7 @@ class Sentry2:
 
         return (camera_reg_value >> 4) & 0x01
 
-    def CameraGetBrightness(self, Brightness):
+    def CameraGetBrightness(self):
 
         err, camera_reg_value = self.__stream.Get(
             kRegCameraConfig3)
@@ -1372,7 +1368,7 @@ class Sentry2:
         return  (camera_reg_value) & 0x0f
 
 
-    def CameraGetContrast(self, Contrast):
+    def CameraGetContrast(self):
 
         err, camera_reg_value = self.__stream.Get(
             kRegCameraConfig3)
@@ -1382,7 +1378,7 @@ class Sentry2:
         return (camera_reg_value >> 4) & 0x0f
 
 
-    def CameraGetSaturation(self, Saturation):
+    def CameraGetSaturation(self):
 
         err, camera_reg_value = self.__stream.Get(
             kRegCameraConfig4)
@@ -1391,7 +1387,7 @@ class Sentry2:
 
         return (camera_reg_value) & 0x0f
 
-    def CameraGetShaprness(self, Shaprness):
+    def CameraGetShaprness(self):
 
         err, camera_reg_value = self.__stream.Get(
             kRegCameraConfig5)
@@ -1413,3 +1409,8 @@ class Sentry2:
                 sleep_ms(500)
 
         return err
+
+class Sentry2(SentryBase):
+    SENTRY2_DEVICE_ID = 0x04
+    def __init__(self, address=0x60, log_level=LOG_ERROR):
+        super().__init__(self.SENTRY2_DEVICE_ID,address,log_level)
