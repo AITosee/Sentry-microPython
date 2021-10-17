@@ -2,7 +2,7 @@ from machine import I2C,UART
 from  Sentry  import *
 import time
 
-sentry = Sentry(log_level=LOG_ERROR)
+sentry = Sentry2(log_level=LOG_ERROR)
 #sentry.SetDebug(log_level=LOG_DEBUG)
 
 #port = I2C(2, freq=400000)
@@ -12,22 +12,22 @@ err = sentry.begin(port)
 print("sentry.begin: 0x%x"% err)
 print("Sentry image_shape = %d %d"%(sentry.cols(), sentry.rows()))
  
-err = sentry.kVisionBegin(kVisionAprilTag)
-print("sentry.VisionBegin(kVisionAprilTag):0x%x"% err)
+err = sentry.kVisionBegin(sentry_vision_e.kVisionAprilTag)
+print("sentry.VisionBegin(sentry_vision_e.kVisionAprilTag):0x%x"% err)
 
 tn = time.ticks_ms()
 while True:
-    ts = tn;
-    obj_num = sentry.GetValue(kVisionAprilTag, Status)
+    ts = tn
+    obj_num = sentry.GetValue(sentry_vision_e.kVisionAprilTag, kStatus)
     tn = time.ticks_ms()
     if obj_num:
         print("Totally %d objects in %dms:"%( obj_num, tn - ts))
         for i in range(obj_num):
-            x = sentry.GetValue(kVisionAprilTag, kXValue)
-            y = sentry.GetValue(kVisionAprilTag, kYValue)
-            w = sentry.GetValue(kVisionAprilTag, kWidthValue)
-            h = sentry.GetValue(kVisionAprilTag, kHeightValue)
-            l = sentry.GetValue(kVisionAprilTag, kLabel, i)
+            x = sentry.GetValue(sentry_vision_e.kVisionAprilTag, kXValue)
+            y = sentry.GetValue(sentry_vision_e.kVisionAprilTag, kYValue)
+            w = sentry.GetValue(sentry_vision_e.kVisionAprilTag, kWidthValue)
+            h = sentry.GetValue(sentry_vision_e.kVisionAprilTag, kHeightValue)
+            l = sentry.GetValue(sentry_vision_e.kVisionAprilTag, kLabel, i)
             print("  obj: x=%d,y=%d,w=%d,h=%d, Label=%d"%( x, y, w, h, l))
 
             
