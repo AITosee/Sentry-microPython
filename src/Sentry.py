@@ -50,7 +50,7 @@ kRegLed = 0x06
 kRegLedLevel = 0x08
 kRegUart = 0x09
 kRegUSBCongig = 0x0B
-kRegLCDCongig = 0x0B
+kRegLcdCongig = 0x0C
 kRegHWConfig = 0x0F
 kRegCameraConfig1 = 0x10
 kRegCameraConfig2 = 0x11
@@ -764,6 +764,7 @@ class SentryBase:
     def __init__(self,device_id, address=0x60, log_level=LOG_ERROR):
         self.__device_id = device_id
         self.__address = address
+        self.__buad = sentry_baudrate_e.kBaud9600
         self.__stream = None
         self.__img_w = 0
         self.__img_h = 0
@@ -866,7 +867,7 @@ class SentryBase:
 
         return SENTRY_OK
 
-    def begin(self, communication_port=None,baud=sentry_baudrate_e.kBaud9600):
+    def begin(self, communication_port=None):
         if "I2C" == communication_port.__class__.__name__ or "MicroBitI2C" == communication_port.__class__.__name__:
             self.__stream = SentryI2CMethod(
                 self.__address, communication_port, logger=self.__logger)
@@ -874,7 +875,7 @@ class SentryBase:
 
         elif 'UART' == communication_port.__class__.__name__:
             self.__stream = SentryUartMethod(
-                self.__address, communication_port,baud, logger=self.__logger)
+                self.__address, communication_port,self.__buad, logger=self.__logger)
             self.Logger(LOG_INFO, "Begin UART mode succeed!")
 
         elif communication_port == None:
@@ -1155,14 +1156,14 @@ class SentryBase:
 
     def LcdSetMode(self, on):
 
-        err, lcd_reg_value = self.__stream.Get(kRegLCDCongig)
+        err, lcd_reg_value = self.__stream.Get(kRegLcdCongig)
         if err:
             return err
 
         lcd_reg_value &= 0xFe
         lcd_reg_value |= (on & 0x01)
 
-        err = self.__stream.Set(kRegLed, lcd_reg_value)
+        err = self.__stream.Set(kRegLcdCongig, lcd_reg_value)
         if err:
             return err
 
@@ -1403,6 +1404,10 @@ class SentryBase:
         return (camera_reg_value) & 0x0f
 
     def UartSetBaudrate(self, baud):
+        self.__buad = baud
+        if not self.__stream:
+            return 0
+
         err, uart_reg_value = self.__stream.Get(kRegUart)
         baudrate = uart_reg_value & 0x07
         if (not err) and baudrate != baud:
