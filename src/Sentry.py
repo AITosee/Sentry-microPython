@@ -1153,7 +1153,7 @@ class SentryBase:
 
         return SENTRY_OK
 
-    def LcdSetColor(self, on):
+    def LcdSetMode(self, on):
 
         err, lcd_reg_value = self.__stream.Get(kRegLCDCongig)
         if err:
