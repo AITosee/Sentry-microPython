@@ -466,15 +466,15 @@ class SentryI2CMethod:
             return err
 
         self.Set(kRegParamValue1H, param[0])
-        self.Set(kRegParamValue1H, param[1])
+        self.Set(kRegParamValue1L, param[1])
         self.Set(kRegParamValue2H, param[2])
-        self.Set(kRegParamValue2H, param[3])
+        self.Set(kRegParamValue2L, param[3])
         self.Set(kRegParamValue3H, param[4])
-        self.Set(kRegParamValue3H, param[5])
+        self.Set(kRegParamValue3L, param[5])
         self.Set(kRegParamValue4H, param[6])
-        self.Set(kRegParamValue4H, param[7])
+        self.Set(kRegParamValue4L, param[7])
         self.Set(kRegParamValue5H, param[8])
-        self.Set(kRegParamValue5H, param[9])
+        self.Set(kRegParamValue5L, param[9])
 
         return SENTRY_OK
 
@@ -929,8 +929,8 @@ class SentryBase:
 
         params = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
         for i in range(min(len(param), 5)):
-            params[i] = param[i] >> 8
-            params[i+1] = param[i] & 0xff
+            params[i*2] = param[i] >> 8
+            params[i*2+1] = param[i] & 0xff
 
         return self.__stream.SetParam(vision_type, params, param_id)
 
@@ -1048,6 +1048,9 @@ class SentryBase:
 
         vision_state = self.__vision_states[vision_type-1]
         if vision_state == None:
+            return 0
+
+        if vision_state.detect <= obj_id:
             return 0
 
         if object_inf == sentry_obj_info_e.kStatus:
