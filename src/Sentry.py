@@ -484,12 +484,12 @@ class SentryUartMethod:
 
     """
 
-    def __init__(self, address, communication_port,baud, logger=None):
+    def __init__(self, address, communication_port, logger=None):
         self.__mu_address = address
         self.__communication_port = communication_port
         self.__logger = logger
         # Setting serial port parameters
-        self.SetBuadrate(baud)
+        self.__communication_port.init(timeout=1000, timeout_char=10)
 
     def Logger(self, *arg):  # level, format, args
         if self.__logger:
@@ -545,13 +545,6 @@ class SentryUartMethod:
             return (SENTRY_PROTOC_CHECK_ERROR, [])
 
         return (SENTRY_PROTOC_OK, tuple(data_list[3:]))
-
-    def SetBuadrate(self, baud=sentry_baudrate_e.kBaud9600):
-        baud_em = (0,1,2,3,4,5,6,7)
-        baud_se = (9600, 19200, 38400, 57600, 115200, 921600, 1152000, 2000000)
-        if baud in baud_em:
-            self.Logger(LOG_CRITICAL, "SetBuadrate:%d", baud_se[baud])
-            self.__communication_port.init(baudrate=baud_se[baud], timeout=1000, timeout_char=10)
 
     def Set(self, reg_address, value):
 
@@ -875,7 +868,7 @@ class SentryBase:
 
         elif 'UART' == communication_port.__class__.__name__:
             self.__stream = SentryUartMethod(
-                self.__address, communication_port,self.__buad, logger=self.__logger)
+                self.__address, communication_port, logger=self.__logger)
             self.Logger(LOG_INFO, "Begin UART mode succeed!")
 
         elif communication_port == None:
@@ -1387,9 +1380,6 @@ class SentryBase:
         return (camera_reg_value) & 0x0f
 
     def UartSetBaudrate(self, baud):
-        self.__buad = baud
-        if not self.__stream:
-            return 0
 
         err, uart_reg_value = self.__stream.Get(kRegUart)
         baudrate = uart_reg_value & 0x07
@@ -1397,10 +1387,6 @@ class SentryBase:
             uart_reg_value &= 0xf8
             uart_reg_value |= baud & 0x07
             err = self.__stream.Set(kRegUart, uart_reg_value)
-        if not err:
-            if 'SentryUartMethod' == self.__stream.__class__.__name__:
-                self.__stream.SetBuadrate(baud)
-                sleep_ms(500)
 
         return err
 
