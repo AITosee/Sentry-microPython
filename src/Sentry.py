@@ -668,7 +668,7 @@ class SentryUartMethod:
 
                         if not start_id:
                             return (SENTRY_OK, vision_state)
-                            
+
                         if sentry_vision_e.kVisionQrCode == vision_type:
                             vision_state.detect = 1
                         else:
@@ -689,7 +689,6 @@ class SentryUartMethod:
                             if sentry_vision_e.kVisionQrCode == vision_type:                       
                                 vision_state.result[v_id].bytestr = ""
                                 for j in range(vision_state.result[v_id].data5):
-                                    print(vision_state.result[v_id].data5,j,17 + 2 * j)
                                     vision_state.result[v_id].bytestr += chr(data[17 + 2 * j])
 
                         if data[0] == SENTRY_PROTOC_RESULT_NOT_END:
