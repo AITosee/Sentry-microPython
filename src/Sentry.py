@@ -1,4 +1,4 @@
-__version__ = "Sentry2 v1.0.0"
+__version__ = "Sentry2 v1.0.2"
 __author__ = "weiyanfengv@gmail.com"
 __license__ = "http://unlicense.org"
 
@@ -1109,28 +1109,6 @@ class SentryBase:
 
         return err
 
-    def LedSetMode(self, manual: bool, hold: bool):
-
-        err, led_reg_value = self.__stream.Get(kRegLed)
-        if err:
-            return err
-
-        gmanual = led_reg_value & 0x01
-        ghold = (led_reg_value >> 4) & 0x01
-
-        if manual != gmanual or hold != ghold:
-            led_reg_value &= 0xfe
-            led_reg_value |= manual & 0x01
-
-            led_reg_value &= 0xef
-            led_reg_value |= (hold & 0x01) << 4
-
-            err = self.__stream.Set(kRegLed, led_reg_value)
-            if err:
-                return err
-
-        return SENTRY_OK
-
     def LedSetColor(self, detected_color, undetected_color, level):
 
         err, led_level = self.__stream.Get(kRegLedLevel)
@@ -1145,10 +1123,12 @@ class SentryBase:
         if err:
             return err
 
-        led_reg_value &= 0xf1
-        led_reg_value |= (detected_color & 0x07) << 1
+        led_reg_value &= 0x10
 
-        led_reg_value &= 0x1f
+        if detected_color == undetected_color:
+            led_reg_value |= 0x01      
+
+        led_reg_value |= (detected_color & 0x07) << 1
         led_reg_value |= (undetected_color & 0x07) << 5
 
         err = self.__stream.Set(kRegLed, led_reg_value)
