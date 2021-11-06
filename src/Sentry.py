@@ -668,8 +668,12 @@ class SentryUartMethod:
 
                         if not start_id:
                             return (SENTRY_OK, vision_state)
+                            
+                        if sentry_vision_e.kVisionQrCode == vision_type:
+                            vision_state.detect = 1
+                        else:
+                            vision_state.detect = stop_id-start_id+1
 
-                        vision_state.detect = stop_id-start_id+1
                         for i in range(vision_state.detect):
                             v_id = i+start_id-1
                             vision_state.result[v_id].data1 = data[10 *
@@ -684,9 +688,9 @@ class SentryUartMethod:
                                                                    i + 14] << 8 | data[10 * i + 15]
                             if sentry_vision_e.kVisionQrCode == vision_type:                       
                                 vision_state.result[v_id].bytestr = ""
-                                for i in range(vision_state.result[v_id].data5):
-                                    vision_state.result[v_id].bytestr += chr(
-                                        data[17 + 2 * i])
+                                for j in range(vision_state.result[v_id].data5):
+                                    print(vision_state.result[v_id].data5,j,17 + 2 * j)
+                                    vision_state.result[v_id].bytestr += chr(data[17 + 2 * j])
 
                         if data[0] == SENTRY_PROTOC_RESULT_NOT_END:
                             continue
@@ -1020,10 +1024,11 @@ class SentryBase:
         while SENTRY_OK != self.__SensorLockkReg(True):
             pass
 
-        err, vision_state = self.__stream.Read(vision_type, vision_state)
-
-        while SENTRY_OK != self.__SensorLockkReg(False):
-            pass
+        try:
+            err, vision_state = self.__stream.Read(vision_type, vision_state)
+        finally:
+            while SENTRY_OK != self.__SensorLockkReg(False):
+                pass
 
         self.__vision_states[vision_type-1] = vision_state
 
