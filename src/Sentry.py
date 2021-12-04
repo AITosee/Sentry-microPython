@@ -165,7 +165,7 @@ class sentry_vision_e:
     kVisionBlob = 2
     kVisionAprilTag = 3
     kVisionLine = 4
-    kVisionBody = 5
+    kVisionLearning = 5
     kVisionCard = 6
     kVisionFace = 7
     kVision20Classes = 8
