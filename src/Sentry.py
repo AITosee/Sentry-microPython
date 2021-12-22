@@ -1053,13 +1053,13 @@ class SentryBase:
         if object_inf == sentry_obj_info_e.kStatus:
             return vision_state.detect
         elif object_inf == sentry_obj_info_e.kXValue:
-            return int(vision_state.result[obj_id].data1*100/self.__img_w)
+            return vision_state.result[obj_id].data1
         elif object_inf == sentry_obj_info_e.kYValue:
-            return int(vision_state.result[obj_id].data2*100/self.__img_h)
+            return vision_state.result[obj_id].data2
         elif object_inf == sentry_obj_info_e.kWidthValue:
-            return int(vision_state.result[obj_id].data3*100/self.__img_w)
+            return vision_state.result[obj_id].data3
         elif object_inf == sentry_obj_info_e.kHeightValue:
-            return int(vision_state.result[obj_id].data4*100/self.__img_h)
+            return vision_state.result[obj_id].data4
         elif object_inf == sentry_obj_info_e.kLabel:
             return vision_state.result[obj_id].data5
         elif object_inf == sentry_obj_info_e.kGValue:
@@ -1104,6 +1104,18 @@ class SentryBase:
                 self.Logger(LOG_INFO, "SensorSetDefault succeed!")
                 break
 
+        return err
+        
+    def SeneorSetCoordinateType(self, coordinate):
+        err, hw_config_reg_value = self.__stream.Get(kRegHWConfig)
+        if err:
+            return err
+        
+        if(((hw_config_reg_value & 0x0c) >> 2) != coordinate):
+            hw_config_reg_value &= 0xF3
+            hw_config_reg_value |= (coordinate & 0x03) << 2
+            err = self.__stream.Set(kRegHWConfig,
+                        hw_config_reg_value)
         return err
 
     def LedSetColor(self, detected_color, undetected_color, level):
