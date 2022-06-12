@@ -44,7 +44,7 @@ while True:
     tn = time.ticks_ms()
     if obj_num:
         print("Totally %d objects in %dms:"%( obj_num, tn - ts))
-        for i in range(obj_num):
+        for i in range(1,obj_num+1):
             label = sentry.GetValue(sentry_vision_e.kVisionColor, sentry_obj_info_e.kLabel, i)
             print("  obj[%d]: Label=%s"%(i,color[label-1]))
             

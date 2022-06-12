@@ -1,4 +1,4 @@
-__version__ = "Sentry2 v1.0.2"
+__version__ = "Sentry2 v1.1.2"
 __author__ = "weiyanfengv@gmail.com"
 __license__ = "http://unlicense.org"
 
@@ -898,7 +898,7 @@ class SentryBase:
     def VisionEnd(self, vision_type):
         return self.VisionSetStatus(vision_type, False)
 
-    def GetValue(self, vision_type, object_inf, obj_id=0):
+    def GetValue(self, vision_type, object_inf, obj_id=1):
         '''
          Note: when getting the vision status, if the block is true, it will wait until the vision_type result is updated   
         '''
@@ -1041,11 +1041,11 @@ class SentryBase:
         if vision_type >= sentry_vision_e.kVisionMaxType:
             return 0
 
-        obj_id = SENTRY_MAX_RESULT if obj_id > SENTRY_MAX_RESULT else obj_id
-
         vision_state = self.__vision_states[vision_type-1]
-        if vision_state == None:
+        if obj_id < 1 or obj_id >SENTRY_MAX_RESULT or vision_state == None :
             return 0
+
+        obj_id -= 1
 
         if vision_state.detect <= obj_id:
             return 0
