@@ -22,7 +22,7 @@ while True:
     tn = time.ticks_ms()
     if obj_num:
         print("Totally %d objects in %dms:"%( obj_num, tn - ts))
-        for i in range(obj_num):
+        for i in range(1,obj_num+1):
             x = sentry.GetValue(sentry_vision_e.kVisionLine, sentry_obj_info_e.kXValue, i)
             y = sentry.GetValue(sentry_vision_e.kVisionLine, sentry_obj_info_e.kYValue, i)
             w = sentry.GetValue(sentry_vision_e.kVisionLine, sentry_obj_info_e.kWidthValue, i)
