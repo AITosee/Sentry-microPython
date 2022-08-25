@@ -159,8 +159,43 @@ class sentry_camera_white_balance_e:
     kYellowLight = 3
     kWhiteBalanceCalibrating = 4
 
-# Sentrys vision
-class sentry_vision_e:
+# Sentry color label
+class color_label_e:
+    kColorBlack = 1
+    kColorWhite = 2
+    kColorRed = 3
+    kColorGreen = 4
+    kColorBlue = 5
+    kColorYellow = 6
+
+# Sentry1 vision
+class sentry1_vision_e:
+    kVisionColor = 1
+    kVisionBlob = 2
+    kVisionBall = 3
+    kVisionLine = 4
+    kVisionCard = 6
+    kVisionBody = 7
+    kVisionMaxType = 8
+
+# Sentry1 card label
+class sentry1_card_label_e:
+    kCardForward = 1
+    kCardLeft = 2
+    kCardRight = 3
+    kCardTurnAround = 4
+    kCardPark = 5
+
+# Sentry1 shape label
+class sentry1_shape_card_e:
+    kCardCheck = 11
+    kCardCross = 12
+    kCardCircle = 13
+    kCardSquare = 14
+    kCardTriangle = 15
+
+# Sentry2 vision
+class sentry2_vision_e:
     kVisionColor = 1
     kVisionBlob = 2
     kVisionAprilTag = 3
@@ -175,7 +210,7 @@ class sentry_vision_e:
     kVisionMaxType = 12
 
 # Sentry card label
-class card_label_e:
+class sentry2_card_label_e:
     kCardForward = 1
     kCardLeft = 2
     kCardRight = 3
@@ -255,14 +290,7 @@ class class20_label_e:
     kTrain = 19
     kMonitor = 20
 
-# Sentry color label
-class color_label_e:
-    kColorBlack = 1
-    kColorWhite = 2
-    kColorRed = 3
-    kColorGreen = 4
-    kColorBlue = 5
-    kColorYellow = 6
+
 
 LOG_OFF = 60
 LOG_CRITICAL = 50
@@ -410,7 +438,7 @@ class SentryI2CMethod:
 
         vision_state.detect = SENTRY_MAX_RESULT if SENTRY_MAX_RESULT < vision_state.detect else vision_state.detect
 
-        if sentry_vision_e.kVisionQrCode == vision_type:
+        if sentry2_vision_e.kVisionQrCode == vision_type:
             vision_state.detect = 1
 
         for i in range(vision_state.detect):
@@ -439,7 +467,7 @@ class SentryI2CMethod:
             if err:
                 return (err, vision_state)
 
-            if sentry_vision_e.kVisionQrCode == vision_type:
+            if sentry2_vision_e.kVisionQrCode == vision_type:
                 vision_state.result[i].bytestr = ""
                 for j in range(vision_state.result[i].data5):
                     result_id = int(j / 5 + 2)
@@ -669,7 +697,7 @@ class SentryUartMethod:
                         if not start_id:
                             return (SENTRY_OK, vision_state)
 
-                        if sentry_vision_e.kVisionQrCode == vision_type:
+                        if sentry2_vision_e.kVisionQrCode == vision_type:
                             vision_state.detect = 1
                         else:
                             vision_state.detect = stop_id-start_id+1
@@ -686,7 +714,7 @@ class SentryUartMethod:
                                                                    i + 12] << 8 | data[10 * i + 13]
                             vision_state.result[v_id].data5 = data[10 *
                                                                    i + 14] << 8 | data[10 * i + 15]
-                            if sentry_vision_e.kVisionQrCode == vision_type:                       
+                            if sentry2_vision_e.kVisionQrCode == vision_type:                       
                                 vision_state.result[v_id].bytestr = ""
                                 for j in range(vision_state.result[v_id].data5):
                                     vision_state.result[v_id].bytestr += chr(data[17 + 2 * j])
@@ -931,7 +959,7 @@ class SentryBase:
         return self.__stream.SetParam(vision_type, params, param_id)
 
     def GetVisionState(self, vision_type):
-        if vision_type >= sentry_vision_e.kVisionMaxType:
+        if vision_type >= sentry2_vision_e.kVisionMaxType:
             return 0
 
         return self.__vision_states[vision_type-1]
@@ -1008,7 +1036,7 @@ class SentryBase:
 
     def UpdateResult(self, vision_type):
 
-        if vision_type >= sentry_vision_e.kVisionMaxType:
+        if vision_type >= sentry2_vision_e.kVisionMaxType:
             return 0
 
         vision_state = self.__vision_states[vision_type-1]
@@ -1038,7 +1066,7 @@ class SentryBase:
 
     def __read(self, vision_type, object_inf, obj_id):
 
-        if vision_type >= sentry_vision_e.kVisionMaxType:
+        if vision_type >= sentry2_vision_e.kVisionMaxType:
             return 0
 
         vision_state = self.__vision_states[vision_type-1]
@@ -1072,7 +1100,7 @@ class SentryBase:
             return 0
 
     def GetQrCodeValue(self):
-        vision_state = self.__vision_states[sentry_vision_e.kVisionQrCode-1]
+        vision_state = self.__vision_states[sentry2_vision_e.kVisionQrCode-1]
         if vision_state == None:
             return ""
 
@@ -1405,6 +1433,11 @@ class SentryBase:
             err = self.__stream.Set(kRegUart, uart_reg_value)
 
         return err
+
+class Sentry1(SentryBase):
+    SENTRY1_DEVICE_ID = 0x05
+    def __init__(self, address=0x60, log_level=LOG_DEBUG):
+        super().__init__(self.SENTRY1_DEVICE_ID,address,log_level)
 
 class Sentry2(SentryBase):
     SENTRY2_DEVICE_ID = 0x04
