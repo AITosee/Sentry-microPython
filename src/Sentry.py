@@ -186,6 +186,10 @@ class sentry1_card_label_e:
     kCardTurnAround = 4
     kCardPark = 5
 
+class sentry1_ball_label_e:
+    kBallTableTennis = 1
+    kBallTennis = 2
+
 # Sentry1 shape label
 class sentry1_shape_card_e:
     kCardCheck = 11
@@ -489,7 +493,7 @@ class SentryI2CMethod:
         if err:
             return err
 
-        err = self.Set(kRegParamId, param_id+1)
+        err = self.Set(kRegParamId, param_id)
         if err:
             return err
 
@@ -734,7 +738,7 @@ class SentryUartMethod:
 
     def SetParam(self, vision_id, param: list, param_id):
         data_list = [SENTRY_PROTOC_START, 0, self.__mu_address,
-                     SENTRY_PROTOC_SET_PARAM, vision_id, param_id+1, param_id+1]
+                     SENTRY_PROTOC_SET_PARAM, vision_id, param_id, param_id]
 
         data_list += param
         data_list[1] = len(data_list)+2
@@ -1436,7 +1440,7 @@ class SentryBase:
 
 class Sentry1(SentryBase):
     SENTRY1_DEVICE_ID = 0x05
-    def __init__(self, address=0x60, log_level=LOG_DEBUG):
+    def __init__(self, address=0x60, log_level=LOG_ERROR):
         super().__init__(self.SENTRY1_DEVICE_ID,address,log_level)
 
 class Sentry2(SentryBase):
