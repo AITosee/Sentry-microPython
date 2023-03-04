@@ -177,7 +177,9 @@ class sentry1_vision_e:
     kVisionCard = 6
     kVisionBody = 7
     kVisionMaxType = 8
-
+    kVisionQrCode = 9
+    kVisionMotionDetect = 11
+    
 # Sentry1 card label
 class sentry1_card_label_e:
     kCardForward = 1
