@@ -213,7 +213,8 @@ class sentry2_vision_e:
     kVisionQrCode = 9
     kVisionObjTrack = 10
     kVisionMotionDetect = 11
-    kVisionMaxType = 12
+    kVisionCustom = 12
+    kVisionMaxType = 13
 
 # Sentry card label
 class sentry2_card_label_e:
