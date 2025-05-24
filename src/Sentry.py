@@ -1,5 +1,4 @@
-__version__ = "Sentry2 v1.1.2"
-__author__ = "weiyanfengv@gmail.com"
+__version__ = "Sentry2 v1.2.4"
 __license__ = "http://unlicense.org"
 
 import ustruct  # pylint: disable=import-error
@@ -200,8 +199,12 @@ class sentry1_shape_card_e:
     kCardSquare = 14
     kCardTriangle = 15
 
+class sentry2_vision_e_out:
+    kVision20Classes = 8
+    kVisionMotionDetect = 11
+
 # Sentry2 vision
-class sentry2_vision_e:
+class sentry2_vision_e(sentry2_vision_e_out):
     kVisionColor = 1
     kVisionBlob = 2
     kVisionAprilTag = 3
@@ -209,10 +212,10 @@ class sentry2_vision_e:
     kVisionLearning = 5
     kVisionCard = 6
     kVisionFace = 7
-    kVision20Classes = 8
+    kVision20Class = 8
     kVisionQrCode = 9
     kVisionObjTrack = 10
-    kVisionMotionDetect = 11
+    kVisionMotion = 11
     kVisionCustom = 12
     kVisionMaxType = 13
 
@@ -1047,6 +1050,9 @@ class SentryBase:
             return 0
 
         vision_state = self.__vision_states[vision_type-1]
+
+        while SENTRY_OK != self.__SensorLockkReg(False):
+            pass
 
         err, frame = self.__stream.Get(kRegFrameCount)
         if err:
