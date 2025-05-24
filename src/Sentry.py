@@ -199,12 +199,12 @@ class sentry1_shape_card_e:
     kCardSquare = 14
     kCardTriangle = 15
 
-class sentry2_vision_e_out:
+class _sentry2_vision_e_out:
     kVision20Classes = 8
     kVisionMotionDetect = 11
 
 # Sentry2 vision
-class sentry2_vision_e(sentry2_vision_e_out):
+class sentry2_vision_e(_sentry2_vision_e_out):
     kVisionColor = 1
     kVisionBlob = 2
     kVisionAprilTag = 3
