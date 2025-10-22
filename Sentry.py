@@ -1,4 +1,4 @@
-__version__ = "Sentry2 v1.2.4"
+__version__ = "Sentry2 v1.2.5"
 __license__ = "http://unlicense.org"
 
 import ustruct  # pylint: disable=import-error
@@ -1103,9 +1103,9 @@ class SentryBase:
             return vision_state.result[obj_id].data4
         elif object_inf == sentry_obj_info_e.kLabel:
             return vision_state.result[obj_id].data5
-        elif object_inf == sentry_obj_info_e.kGValue:
-            return vision_state.result[obj_id].data1
         elif object_inf == sentry_obj_info_e.kRValue:
+            return vision_state.result[obj_id].data1
+        elif object_inf == sentry_obj_info_e.kGValue:
             return vision_state.result[obj_id].data2
         elif object_inf == sentry_obj_info_e.kBValue:
             return vision_state.result[obj_id].data3
