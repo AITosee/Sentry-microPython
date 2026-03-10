@@ -961,7 +961,7 @@ class SentryBase:
         return err
 
     def SetParam(self, vision_type, param: list, param_id):
-        if param_id < 0 or param_id >= SENTRY_MAX_RESULT:
+        if param_id < 1 or param_id > SENTRY_MAX_RESULT:
             return SENTRY_FAIL
 
         params = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
