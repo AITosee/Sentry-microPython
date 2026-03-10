@@ -214,10 +214,9 @@ class sentry2_vision_e(_sentry2_vision_e_out):
     kVisionFace = 7
     kVision20Class = 8
     kVisionQrCode = 9
-    kVisionObjTrack = 10
+    kVisionCustom = 10
     kVisionMotion = 11
-    kVisionCustom = 12
-    kVisionMaxType = 13
+    kVisionMaxType = 12
 
 # Sentry card label
 class sentry2_card_label_e:
@@ -561,13 +560,17 @@ class SentryUartMethod:
 
         data_len = 0
         data_list = []
-        for _ in range(self.__communication_port.any()):
-            data_list.append(self.__communication_port.read(1)[0])
-            if data_list[0] == SENTRY_PROTOC_START:
-                data_list.append(self.__communication_port.read(1)[0])
+        while self.__communication_port.any() > 0:
+            data=self.__communication_port.read(1)
+            if len(data_list) > 0 and data_list[0] == SENTRY_PROTOC_START:
+                data_list.append(data[0])
                 data_len = data_list[1]
                 data_list += list(self.__communication_port.read(data_len-2))
                 break
+            elif data[0] == SENTRY_PROTOC_START:
+                data_list.append(data[0])
+            else:
+                continue
 
         if self.__logger:
             self.Logger(LOG_DEBUG, "    rev-> %s",
