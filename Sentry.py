@@ -1,4 +1,4 @@
-__version__ = "Sentry2 v1.2.5"
+__version__ = "Sentry2 v1.2.6"
 __license__ = "http://unlicense.org"
 
 import ustruct  # pylint: disable=import-error
