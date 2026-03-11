@@ -1,4 +1,4 @@
-__version__ = "Sentry2 v1.2.6"
+__version__ = "Sentry2 v1.2.7"
 __license__ = "http://unlicense.org"
 
 import ustruct  # pylint: disable=import-error
@@ -664,9 +664,9 @@ class SentryUartMethod:
             elif err == SENTRY_PROTOC_TIMEOUT:
                 try_time += 1
                 if try_time > 3:
-                    return SENTRY_READ_TIMEOUT
+                    return (SENTRY_READ_TIMEOUT, 0)
             else:
-                return SENTRY_FAIL
+                return (SENTRY_FAIL, 0)
 
     def Read(self, vision_type, vision_state):
 
